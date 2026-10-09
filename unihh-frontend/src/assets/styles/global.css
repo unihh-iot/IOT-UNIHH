@@ -1,0 +1,185 @@
+@import './variables.css';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--iot-bg-primary);
+  color: var(--iot-text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 工业暗色 UI 自定义全局类 */
+.iot-card {
+  background: var(--iot-card-bg);
+  border: 1px solid var(--iot-border-color);
+  border-radius: var(--iot-radius);
+  padding: 20px;
+  box-shadow: var(--iot-shadow);
+  transition: border-color 0.2s ease;
+}
+
+.iot-card:hover {
+  border-color: var(--iot-border-accent);
+}
+
+.iot-header-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--iot-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Global Element Plus Component Dark Theme Overrides (Zero White Backdrops) */
+.el-dialog {
+  background-color: #0b1120 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7) !important;
+}
+
+.el-dialog__title {
+  color: #f8fafc !important;
+  font-weight: 600 !important;
+}
+
+.el-input__wrapper, .el-select__wrapper {
+  background-color: #0f172a !important;
+  box-shadow: 0 0 0 1px #334155 inset !important;
+  color: #f8fafc !important;
+}
+
+.el-input__inner, .el-select__input {
+  color: #f8fafc !important;
+}
+
+.el-select-dropdown__item {
+  color: #cbd5e1 !important;
+}
+
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover {
+  background-color: #1e293b !important;
+  color: #38bdf8 !important;
+}
+
+.el-popper.is-pure {
+  background-color: #0f172a !important;
+  border: 1px solid #334155 !important;
+}
+
+.el-popper__arrow::before {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+.el-table {
+  --el-table-border-color: rgba(255, 255, 255, 0.08) !important;
+  --el-table-header-bg-color: #0f172a !important;
+  --el-table-tr-bg-color: #0b1120 !important;
+  --el-table-row-hover-bg-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background-color: rgba(15, 23, 42, 0.75) !important;
+}
+
+.el-pagination button {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+}
+
+.el-pagination .el-pager li {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+}
+
+.el-pagination .el-pager li.is-active {
+  background-color: #06b6d4 !important;
+  color: #000 !important;
+}
+
+/* 图标选择器 Popover 深色科技风格 */
+.el-popper.icon-select-popper {
+  background-color: #0b1325 !important;
+  border: 1px solid #1e293b !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+}
+
+.el-popper.icon-select-popper .el-popper__arrow::before {
+  background-color: #0b1325 !important;
+  border-color: #1e293b !important;
+}
+
+/* 用户悬浮下拉框深色科技风格 */
+.el-popper.user-dropdown-popper {
+  background-color: #0b1325 !important;
+  border: 1px solid #1e293b !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+}
+
+.el-popper.user-dropdown-popper .el-popper__arrow::before {
+  background-color: #0b1325 !important;
+  border-color: #1e293b !important;
+}
+
+.user-dropdown-popper .user-dropdown-menu {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 4px 0 !important;
+  min-width: 140px;
+}
+
+.user-dropdown-popper .dropdown-user-header {
+  padding: 8px 16px 6px;
+}
+
+.user-dropdown-popper .dropdown-user-title {
+  color: #f8fafc;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.user-dropdown-popper .dropdown-user-desc {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+.user-dropdown-popper .el-dropdown-menu__item--divided {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  margin: 4px 0 !important;
+}
+
+.user-dropdown-popper .dropdown-logout-item {
+  color: #ef4444 !important;
+  font-size: 0.82rem !important;
+  padding: 8px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.user-dropdown-popper .dropdown-logout-item:hover,
+.user-dropdown-popper .dropdown-logout-item:focus {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  color: #f87171 !important;
+}
+

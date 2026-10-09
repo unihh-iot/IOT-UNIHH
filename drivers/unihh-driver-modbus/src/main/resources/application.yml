@@ -1,0 +1,76 @@
+server:
+  port: 28011
+
+spring:
+  application:
+    name: unihh-driver-modbus
+
+emqx:
+  server-uri: ${EMQX_SERVER_URI:tcp://127.0.0.1:1883}
+  username: ${EMQX_USERNAME:unihh}
+  password: ${EMQX_PASSWORD:unihh}
+  client-id-prefix: ${EMQX_CLIENT_ID_PREFIX:unihh-driver-modbus}
+  clean-session: ${EMQX_CLEAN_SESSION:true}
+  keep-alive-interval: ${EMQX_KEEP_ALIVE:30}
+  connection-timeout: ${EMQX_CONNECT_TIMEOUT:10}
+  automatic-reconnect: ${EMQX_AUTO_RECONNECT:true}
+  qos: ${EMQX_QOS:1}
+
+admin:
+  server-url: ${ADMIN_SERVER_URL:http://localhost:28001}
+
+modbus:
+  driver:
+    code: ${MODBUS_DRIVER_CODE:modbus-tcp}
+    name: ${MODBUS_DRIVER_NAME:Modbus TCP 工业协议驱动}
+    service-url: ${MODBUS_DRIVER_SERVICE_URL:http://localhost:28011}
+    description: ${MODBUS_DRIVER_DESC:支持 Modbus TCP 8大标准功能码 (FC01/FC02/FC03/FC04/FC05/FC06/FC15/FC16) 读写与编解码}
+    version: "2.0.0"
+    params:
+      - key: host
+        name: "IP地址"
+        dataType: STRING
+        required: true
+        defaultValue: "192.168.1.100"
+      - key: port
+        name: "端口号"
+        dataType: INT
+        required: true
+        defaultValue: "502"
+      - key: slaveId
+        name: "Slave ID"
+        dataType: INT
+        required: true
+        defaultValue: "1"
+      - key: byteOrder
+        name: "寄存器字节序"
+        dataType: SELECT
+        required: false
+        defaultValue: "CDAB"
+        description: "32位/64位整型与浮点数在Modbus寄存器中的存储排列顺序 (推荐CDAB)"
+        options:
+          - label: "CDAB (工业推荐 / 32位小端字大端字节)"
+            value: "CDAB"
+          - label: "ABCD (标准大端模式 / Big-Endian)"
+            value: "ABCD"
+          - label: "DCBA (完全小端模式 / Little-Endian)"
+            value: "DCBA"
+          - label: "BADC (字节交换模式 / Byte Swap)"
+            value: "BADC"
+          - label: "AB (16位标准大端)"
+            value: "AB"
+          - label: "BA (16位字节交换)"
+            value: "BA"
+          - label: "ABCDEFGH (64位标准大端)"
+            value: "ABCDEFGH"
+          - label: "GHEFCDAB (64位双字交换)"
+            value: "GHEFCDAB"
+          - label: "HGFEDCBA (64位完全小端)"
+            value: "HGFEDCBA"
+          - label: "BADCFEHG (64位字节交换)"
+            value: "BADCFEHG"
+
+logging:
+  level:
+    root: INFO
+    com.unihh.iot.driver.modbus: DEBUG

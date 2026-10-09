@@ -1,0 +1,44 @@
+server:
+  port: 28013
+
+spring:
+  application:
+    name: unihh-driver-opcua
+
+emqx:
+  server-uri: ${EMQX_SERVER_URI:tcp://127.0.0.1:1883}
+  username: ${EMQX_USERNAME:unihh}
+  password: ${EMQX_PASSWORD:unihh}
+  client-id-prefix: ${EMQX_CLIENT_ID_PREFIX:unihh-driver-opcua}
+  clean-session: ${EMQX_CLEAN_SESSION:true}
+  keep-alive-interval: ${EMQX_KEEP_ALIVE:30}
+  connection-timeout: ${EMQX_CONNECT_TIMEOUT:10}
+  automatic-reconnect: ${EMQX_AUTO_RECONNECT:true}
+  qos: ${EMQX_QOS:1}
+
+admin:
+  server-url: ${ADMIN_SERVER_URL:http://localhost:28001}
+
+opcua:
+  driver:
+    code: ${OPCUA_DRIVER_CODE:opc-ua}
+    name: ${OPCUA_DRIVER_NAME:OPC UA 工业协议驱动}
+    service-url: ${OPCUA_DRIVER_SERVICE_URL:http://localhost:28013}
+    description: ${OPCUA_DRIVER_DESC:支持 OPC UA Binary (opc.tcp) Message 报文解包与 NodeId 动态解析}
+    version: "2.0.0"
+    params:
+      - key: endpointUrl
+        name: "Endpoint URL"
+        dataType: STRING
+        required: true
+        defaultValue: "opc.tcp://192.168.1.50:4840"
+      - key: securityPolicy
+        name: "安全策略"
+        dataType: STRING
+        required: false
+        defaultValue: "None"
+
+logging:
+  level:
+    root: INFO
+    com.unihh.iot.driver.opcua: DEBUG

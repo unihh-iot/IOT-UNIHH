@@ -1,0 +1,31 @@
+server:
+  port: 28002
+
+spring:
+  application:
+    name: unihh-data
+
+emqx:
+  server-uri: ${EMQX_SERVER_URI:tcp://127.0.0.1:1883}
+  username: ${EMQX_USERNAME:unihh}
+  password: ${EMQX_PASSWORD:unihh}
+  client-id-prefix: ${EMQX_CLIENT_ID_PREFIX:unihh-data}
+  clean-session: ${EMQX_CLEAN_SESSION:true}
+  keep-alive-interval: ${EMQX_KEEP_ALIVE:30}
+  connection-timeout: ${EMQX_CONNECT_TIMEOUT:10}
+  automatic-reconnect: ${EMQX_AUTO_RECONNECT:true}
+  qos: ${EMQX_QOS:1}
+
+unihh:
+  storage:
+    active-engine: mysql
+  services:
+    protocol-service:
+      host: 127.0.0.1
+      port: 28003
+      grpc-port: 29003
+    admin-service:
+      host: 127.0.0.1
+      port: 28001
+      grpc-port: 29001
+

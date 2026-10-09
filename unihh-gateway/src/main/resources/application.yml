@@ -1,0 +1,21 @@
+server:
+  port: 28000
+
+spring:
+  application:
+    name: unihh-gateway
+
+unihh:
+  services:
+    admin-service:
+      host: 127.0.0.1
+      port: 28001
+      grpc-port: 29001
+    data-service:
+      host: 127.0.0.1
+      port: 28002
+      grpc-port: 29002
+    protocol-service:
+      host: 127.0.0.1
+      port: 28003
+      grpc-port: 29003

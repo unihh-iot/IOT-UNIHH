@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.unihh.iot.protocol.base.BaseDriverMqttManager,\
+  com.unihh.iot.protocol.base.DriverPollingEngine,\
+  com.unihh.iot.protocol.base.BaseDriverController

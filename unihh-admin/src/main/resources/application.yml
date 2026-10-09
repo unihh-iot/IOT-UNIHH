@@ -1,0 +1,42 @@
+server:
+  port: 28001
+
+spring:
+  application:
+    name: unihh-admin
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  datasource:
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:com.mysql.cj.jdbc.Driver}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/unihh_iot?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      connection-timeout: 5000
+      initialization-fail-timeout: -1
+
+emqx:
+  server-uri: ${EMQX_SERVER_URI:tcp://127.0.0.1:1883}
+  username: ${EMQX_USERNAME:unihh}
+  password: ${EMQX_PASSWORD:unihh}
+  client-id-prefix: ${EMQX_CLIENT_ID_PREFIX:unihh-admin}
+  clean-session: ${EMQX_CLEAN_SESSION:true}
+  keep-alive-interval: ${EMQX_KEEP_ALIVE:30}
+  connection-timeout: ${EMQX_CONNECT_TIMEOUT:10}
+  automatic-reconnect: ${EMQX_AUTO_RECONNECT:true}
+  qos: ${EMQX_QOS:1}
+
+unihh:
+  services:
+    data-service:
+      host: 127.0.0.1
+      port: 28002
+      grpc-port: 29002
+    protocol-service:
+      host: 127.0.0.1
+      port: 28003
+      grpc-port: 29003

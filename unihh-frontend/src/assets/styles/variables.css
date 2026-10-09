@@ -1,0 +1,39 @@
+/* 工业 IoT 现代风格全局变量 */
+:root {
+  --iot-bg-primary: #0f172a;
+  --iot-bg-secondary: #1e293b;
+  --iot-bg-tertiary: #334155;
+  --iot-card-bg: #1e293b;
+  --iot-border-color: #334155;
+  --iot-border-accent: #475569;
+
+  --iot-text-primary: #f8fafc;
+  --iot-text-secondary: #94a3b8;
+  --iot-text-muted: #64748b;
+
+  --iot-color-cyan: #06b6d4;
+  --iot-color-green: #10b981;
+  --iot-color-amber: #f59e0b;
+  --iot-color-red: #ef4444;
+  --iot-color-blue: #3b82f6;
+
+  --iot-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  --iot-radius: 8px;
+
+  /* Element Plus Complete Dark Theme Overrides */
+  --el-bg-color: #0f172a;
+  --el-bg-color-overlay: #1e293b;
+  --el-bg-color-page: #0b1120;
+  --el-fill-color-blank: #0b1120;
+  --el-fill-color: rgba(30, 41, 59, 0.8);
+  --el-fill-color-light: #1e293b;
+  --el-fill-color-lighter: #0f172a;
+  --el-text-color-primary: #f8fafc;
+  --el-text-color-regular: #cbd5e1;
+  --el-text-color-secondary: #94a3b8;
+  --el-border-color: #334155;
+  --el-border-color-light: rgba(255, 255, 255, 0.1);
+  --el-border-color-lighter: rgba(255, 255, 255, 0.05);
+  --el-mask-color: rgba(0, 0, 0, 0.8);
+  --el-color-primary: #06b6d4;
+}
