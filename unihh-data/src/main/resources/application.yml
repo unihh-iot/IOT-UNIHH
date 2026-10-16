@@ -18,14 +18,14 @@ emqx:
 
 unihh:
   storage:
-    active-engine: mysql
+    active-engine: ${UNIHH_STORAGE_ACTIVE_ENGINE:mysql}
   services:
     protocol-service:
-      host: 127.0.0.1
-      port: 28003
-      grpc-port: 29003
+      host: ${UNIHH_PROTOCOL_HOST:127.0.0.1}
+      port: ${UNIHH_PROTOCOL_PORT:28003}
+      grpc-port: ${UNIHH_PROTOCOL_GRPC_PORT:29003}
     admin-service:
-      host: 127.0.0.1
-      port: 28001
-      grpc-port: 29001
+      host: ${UNIHH_ADMIN_HOST:127.0.0.1}
+      port: ${UNIHH_ADMIN_PORT:28001}
+      grpc-port: ${UNIHH_ADMIN_GRPC_PORT:29001}
 

@@ -1,0 +1,6 @@
+**/.git
+**/.idea
+**/*.md
+**/node_modules
+**/src/test
+**/.DS_Store

@@ -1,0 +1,197 @@
+services:
+  # ==========================================
+  # 基础基础设施: MySQL 8.0 关系型业务库
+  # ==========================================
+  unihh-mysql:
+    image: mysql:8.0
+    container_name: unihh-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "unihh_iot"
+      TZ: "Asia/Shanghai"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+      - --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db/unihh_iot.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - mysql_data:/var/lib/mysql
+    networks:
+      - unihh-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p123456 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ==========================================
+  # 核心工业消息总线: EMQX 5.x 消息代理集群
+  # ==========================================
+  unihh-emqx:
+    image: registry.cn-shenzhen.aliyuncs.com/deversun/unihh-emqx:v20261009
+    container_name: unihh-emqx
+    restart: always
+    ports:
+      - "1883:1883"     # MQTT TCP 协议端口
+      - "18083:18083"   # EMQX Dashboard 控制台端口 (admin / public)
+      - "8083:8083"     # MQTT WebSocket 端口
+      - "8883:8883"     # MQTT SSL/TLS 端口
+    environment:
+      TZ: "Asia/Shanghai"
+    networks:
+      - unihh-network
+
+  # ==========================================
+  # 统一管理后台中心: unihh-admin (:28001)
+  # ==========================================
+  unihh-admin:
+    build:
+      context: ./unihh-admin
+      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY:-registry.cn-shenzhen.aliyuncs.com/deversun}/unihh-admin:${VERSION:-1.0.0}
+    container_name: unihh-admin
+    restart: always
+    ports:
+      - "28001:28001"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://unihh-mysql:3306/unihh_iot?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "123456"
+      EMQX_SERVER_URI: "tcp://unihh-emqx:1883"
+      EMQX_USERNAME: "unihh"
+      EMQX_PASSWORD: "unihh"
+      UNIHH_DATA_HOST: "unihh-data"
+    depends_on:
+      unihh-mysql:
+        condition: service_healthy
+      unihh-emqx:
+        condition: service_started
+    networks:
+      - unihh-network
+
+  # ==========================================
+  # 数据处理与规则引擎中心: unihh-data (:28002)
+  # ==========================================
+  unihh-data:
+    build:
+      context: ./unihh-data
+      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY:-registry.cn-shenzhen.aliyuncs.com/deversun}/unihh-data:${VERSION:-1.0.0}
+    container_name: unihh-data
+    restart: always
+    ports:
+      - "28002:28002"
+    environment:
+      EMQX_SERVER_URI: "tcp://unihh-emqx:1883"
+      EMQX_USERNAME: "unihh"
+      EMQX_PASSWORD: "unihh"
+      UNIHH_ADMIN_HOST: "unihh-admin"
+    depends_on:
+      - unihh-emqx
+      - unihh-admin
+    networks:
+      - unihh-network
+
+  # ==========================================
+  # 统一 API 网关入口: unihh-gateway (:28000)
+  # ==========================================
+  unihh-gateway:
+    build:
+      context: ./unihh-gateway
+      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY:-registry.cn-shenzhen.aliyuncs.com/deversun}/unihh-gateway:${VERSION:-1.0.0}
+    container_name: unihh-gateway
+    restart: always
+    ports:
+      - "28000:28000"
+    environment:
+      UNIHH_ADMIN_HOST: "unihh-admin"
+      UNIHH_DATA_HOST: "unihh-data"
+    depends_on:
+      - unihh-admin
+      - unihh-data
+    networks:
+      - unihh-network
+
+  # ==========================================
+  # 独立协议驱动服务: Modbus TCP 驱动 (:28011)
+  # ==========================================
+  unihh-driver-modbus:
+    build:
+      context: ./drivers/unihh-driver-modbus
+      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY:-registry.cn-shenzhen.aliyuncs.com/deversun}/unihh-driver-modbus:${VERSION:-1.0.0}
+    container_name: unihh-driver-modbus
+    restart: always
+    ports:
+      - "28011:28011"
+    environment:
+      EMQX_SERVER_URI: "tcp://unihh-emqx:1883"
+      EMQX_USERNAME: "unihh"
+      EMQX_PASSWORD: "unihh"
+      ADMIN_SERVER_URL: "http://unihh-admin:28001"
+      MODBUS_DRIVER_SERVICE_URL: "http://unihh-driver-modbus:28011"
+    depends_on:
+      - unihh-emqx
+      - unihh-admin
+    networks:
+      - unihh-network
+
+  # ==========================================
+  # 独立协议驱动服务: 西门子 S7 驱动 (:28012)
+  # ==========================================
+  unihh-driver-s7:
+    build:
+      context: ./drivers/unihh-driver-s7
+      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY:-registry.cn-shenzhen.aliyuncs.com/deversun}/unihh-driver-s7:${VERSION:-1.0.0}
+    container_name: unihh-driver-s7
+    restart: always
+    ports:
+      - "28012:28012"
+    environment:
+      EMQX_SERVER_URI: "tcp://unihh-emqx:1883"
+      EMQX_USERNAME: "unihh"
+      EMQX_PASSWORD: "unihh"
+      ADMIN_SERVER_URL: "http://unihh-admin:28001"
+      S7_DRIVER_SERVICE_URL: "http://unihh-driver-s7:28012"
+    depends_on:
+      - unihh-emqx
+      - unihh-admin
+    networks:
+      - unihh-network
+
+  # ==========================================
+  # 独立协议驱动服务: OPC UA 驱动 (:28013)
+  # ==========================================
+  unihh-driver-opcua:
+    build:
+      context: ./drivers/unihh-driver-opcua
+      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY:-registry.cn-shenzhen.aliyuncs.com/deversun}/unihh-driver-opcua:${VERSION:-1.0.0}
+    container_name: unihh-driver-opcua
+    restart: always
+    ports:
+      - "28013:28013"
+    environment:
+      EMQX_SERVER_URI: "tcp://unihh-emqx:1883"
+      EMQX_USERNAME: "unihh"
+      EMQX_PASSWORD: "unihh"
+      ADMIN_SERVER_URL: "http://unihh-admin:28001"
+      OPCUA_DRIVER_SERVICE_URL: "http://unihh-driver-opcua:28013"
+    depends_on:
+      - unihh-emqx
+      - unihh-admin
+    networks:
+      - unihh-network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  unihh-network:
+    driver: bridge
