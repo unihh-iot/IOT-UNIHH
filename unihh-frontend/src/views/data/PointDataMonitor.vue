@@ -748,6 +748,7 @@ import StatusBadge from "../../components/common/StatusBadge.vue";
 import { getDeviceList, getPointAddressMappings } from "../../api/device";
 import { getThingModel } from "../../api/thingmodel";
 import { queryHistoryData, getLatestPointData } from "../../api/data";
+import { API_CONFIG } from "../../config/constants";
 
 const selectedDeviceId = ref("");
 const deviceList = ref([]);
@@ -1166,7 +1167,7 @@ const initSse = (deviceId) => {
   if (!deviceId || !sseEnabled.value) return;
 
   sseStatus.value = "connecting";
-  const url = `/api/v1/data/sse/${deviceId}`;
+  const url = `${API_CONFIG.BASE_URL}/data/sse/${deviceId}`;
 
   try {
     sseSource = new EventSource(url);
