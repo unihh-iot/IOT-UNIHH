@@ -31,8 +31,6 @@ pnpm-debug.log*
 # ==========================================
 # Application Logs & Temporary Files
 # ==========================================
-logs/
-**/logs/
 *.log
 *.sqlite
 tmp/
