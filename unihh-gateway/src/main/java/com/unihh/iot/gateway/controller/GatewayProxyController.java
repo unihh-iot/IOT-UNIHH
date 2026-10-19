@@ -30,6 +30,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -41,6 +45,11 @@ import javax.servlet.http.HttpServletRequest;
 public class GatewayProxyController {
     private static final Logger log = LoggerFactory.getLogger(GatewayProxyController.class);
     private final RestTemplate restTemplate = new RestTemplate();
+
+    /** RFC 2616 逐跳头清单: 代理转发时不应透传，否则会与本机 Tomcat 自身生成的同名头重复 */
+    private static final Set<String> HOP_BY_HOP_HEADERS = new HashSet<>(Arrays.asList(
+            "transfer-encoding", "content-length", "connection", "keep-alive",
+            "proxy-authenticate", "proxy-authorization", "te", "trailer", "upgrade"));
 
     @Value("${unihh.services.admin-service.host:127.0.0.1}")
     private String adminHost;
@@ -201,27 +210,19 @@ public class GatewayProxyController {
         HttpEntity<byte[]> entity = new HttpEntity<>(body, headers);
 
         try {
-            return restTemplate.exchange(URI.create(targetUrl), method, entity, byte[].class);
+            ResponseEntity<byte[]> resp = restTemplate.exchange(URI.create(targetUrl), method, entity, byte[].class);
+            return ResponseEntity.status(resp.getStatusCode())
+                    .headers(stripHopByHopHeaders(resp.getHeaders(), resp.getBody()))
+                    .body(resp.getBody());
         } catch (org.springframework.web.client.HttpStatusCodeException e) {
             // 下游微服务返回业务 HTTP 状态码响应 (如 400 参数异常, 401 未授权, 403 权限不足, 404 资源不存在, 500 等)
             // 网关将下游原始 HTTP 状态码与响应体无损透传给前端客户端，禁止包装成 502
             log.warn("[API Gateway 业务拦截透传] targetUrl={}, status={}, response={}",
                     targetUrl, e.getRawStatusCode(), e.getResponseBodyAsString());
-            HttpHeaders respHeaders = new HttpHeaders();
-            if (e.getResponseHeaders() != null) {
-                e.getResponseHeaders().forEach((name, values) -> {
-                    if (!HttpHeaders.TRANSFER_ENCODING.equalsIgnoreCase(name)
-                            && !HttpHeaders.CONTENT_LENGTH.equalsIgnoreCase(name)) {
-                        respHeaders.put(name, values);
-                    }
-                });
-            }
-            if (respHeaders.getContentType() == null) {
-                respHeaders.setContentType(MediaType.APPLICATION_JSON);
-            }
+            byte[] errorBody = e.getResponseBodyAsByteArray();
             return ResponseEntity.status(e.getRawStatusCode())
-                    .headers(respHeaders)
-                    .body(e.getResponseBodyAsByteArray());
+                    .headers(stripHopByHopHeaders(e.getResponseHeaders(), errorBody))
+                    .body(errorBody);
         } catch (Exception e) {
             // 如果目标 HTTP 服务不可用，尝试走 gRPC 降级回退
             if (targetPort != adminPort && (uri.contains("drivers") || uri.contains("protocol"))) {
@@ -239,6 +240,29 @@ public class GatewayProxyController {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                     .body(R.fail(502, "网关转发下游目标服务不可用 (端口 " + targetPort + " / gRPC " + targetGrpcPort + " 连接被拒绝，请确认下游服务 `java -jar` 已启动): " + e.getMessage()));
         }
+    }
+
+    /**
+     * 剥离下游响应头中的逐跳头 (Transfer-Encoding/Content-Length/Connection 等)
+     * 下游 (如 unihh-admin Tomcat) 对较大 JSON 响应采用 chunked 分块传输，若原样透传
+     * Transfer-Encoding 头，网关自身 Tomcat 写出响应时会再追加一个同名头，导致响应中出现
+     * 两个 Transfer-Encoding: chunked; nginx 1.21+ 对上游重复逐跳头校验失败直接断开返回 502
+     * (错误日志: upstream sent duplicate header line: "Transfer-Encoding: chunked")
+     */
+    private HttpHeaders stripHopByHopHeaders(HttpHeaders downstreamHeaders, byte[] body) {
+        HttpHeaders cleanHeaders = new HttpHeaders();
+        if (downstreamHeaders != null) {
+            downstreamHeaders.forEach((name, values) -> {
+                if (name != null && !HOP_BY_HOP_HEADERS.contains(name.toLowerCase(Locale.ROOT))) {
+                    cleanHeaders.put(name, values);
+                }
+            });
+        }
+        if (cleanHeaders.getContentType() == null) {
+            cleanHeaders.setContentType(MediaType.APPLICATION_JSON);
+        }
+        cleanHeaders.setContentLength(body != null ? body.length : 0);
+        return cleanHeaders;
     }
 
     private byte[] JSONResponseRaw(String jsonStr) {

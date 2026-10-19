@@ -1,0 +1,319 @@
+/* ============================================================
+   UNIHH-IOT 文档站视觉增强
+   固定动效背景(TechBackground 组件)之上的界面风格覆盖:
+   玻璃拟态导航/侧边栏 + 渐变标题 + 悬浮卡片
+   ============================================================ */
+
+:root {
+  --unihh-c1: #1e6fff;
+  --unihh-c2: #22d3ee;
+  --unihh-c3: #8b5cf6;
+  --unihh-glass: rgba(255, 255, 255, 0.68);
+  --unihh-glass-strong: rgba(255, 255, 255, 0.85);
+  --unihh-border: rgba(30, 111, 255, 0.14);
+  --unihh-shadow: rgba(15, 23, 42, 0.08);
+  --unihh-shadow-strong: rgba(30, 111, 255, 0.22);
+  --unihh-aurora-opacity: 0.26;
+
+  /* 品牌色覆盖:默认主题的绿色全部替换为品牌蓝 */
+  --vp-c-brand-1: #1e6fff;
+  --vp-c-brand-2: #4f8cff;
+  --vp-c-brand-3: #1a5fe0;
+  --vp-c-brand-soft: rgba(30, 111, 255, 0.14);
+  --vp-c-accent: #1a5fe0;
+  --vp-c-accent-bg: #1e6fff;
+  --vp-c-accent-hover: #4f8cff;
+  --vp-c-accent-soft: rgba(30, 111, 255, 0.14);
+}
+
+html[data-theme='dark'] {
+  --unihh-glass: rgba(10, 16, 30, 0.6);
+  --unihh-glass-strong: rgba(13, 20, 38, 0.85);
+  --unihh-border: rgba(125, 211, 252, 0.16);
+  --unihh-shadow: rgba(0, 0, 0, 0.45);
+  --unihh-shadow-strong: rgba(34, 211, 238, 0.25);
+  --unihh-aurora-opacity: 0.4;
+
+  --vp-c-brand-1: #7db5ff;
+  --vp-c-brand-2: #5a9bff;
+  --vp-c-brand-3: #9cc8ff;
+  --vp-c-brand-soft: rgba(125, 181, 255, 0.16);
+  --vp-c-accent: #9cc8ff;
+  --vp-c-accent-bg: #1e6fff;
+  --vp-c-accent-hover: #7db5ff;
+  --vp-c-accent-soft: rgba(125, 181, 255, 0.16);
+}
+
+/* —— 放出固定背景层 —— */
+html,
+body {
+  background: transparent !important;
+}
+
+.vp-theme-container {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+.vp-page,
+.vp-home {
+  background: transparent !important;
+}
+
+/* —— 玻璃导航栏 —— */
+.vp-navbar {
+  background: var(--unihh-glass) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  backdrop-filter: blur(18px) saturate(1.6);
+  border-bottom: 1px solid var(--unihh-border) !important;
+  box-shadow: 0 8px 32px var(--unihh-shadow);
+  transition: background 0.4s ease;
+}
+
+/* 导航栏底部的渐变光束线 */
+.vp-navbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 5%,
+    rgba(30, 111, 255, 0.55) 30%,
+    rgba(34, 211, 238, 0.5) 55%,
+    rgba(139, 92, 246, 0.45) 75%,
+    transparent 95%
+  );
+  pointer-events: none;
+}
+
+/* —— 搜索框:与玻璃导航融为一体 —— */
+.search-box input {
+  border: 1px solid var(--unihh-border);
+  border-radius: 10px;
+  background: var(--unihh-glass);
+  caret-color: var(--unihh-c1);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.search-box input:focus {
+  border-color: rgba(30, 111, 255, 0.45);
+  background: var(--unihh-glass-strong);
+  box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.14);
+}
+
+.search-box .suggestions {
+  border-radius: 12px;
+  border: 1px solid var(--unihh-border);
+  background: var(--unihh-glass-strong);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow: 0 18px 48px var(--unihh-shadow);
+  overflow: hidden;
+}
+
+.search-box .suggestion.focused {
+  background: rgba(30, 111, 255, 0.1);
+}
+
+html[data-theme='dark'] .search-box .suggestion.focused {
+  background: rgba(125, 211, 252, 0.12);
+}
+
+.search-box .suggestion .page-title {
+  font-weight: 600;
+}
+
+/* —— 玻璃侧边栏 —— */
+.vp-sidebar {
+  background: var(--unihh-glass) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  backdrop-filter: blur(18px) saturate(1.6);
+  border-right: 1px solid var(--unihh-border) !important;
+}
+
+.vp-sidebar ul,
+.vp-sidebar li {
+  background: transparent;
+}
+
+/* —— 首页 Hero —— */
+.vp-home .vp-hero {
+  padding-top: 10rem !important;
+}
+
+/* 主标题:流动渐变文字 */
+.vp-hero h1 {
+  background: linear-gradient(
+    100deg,
+    var(--unihh-c1) 0%,
+    var(--unihh-c2) 30%,
+    var(--unihh-c3) 60%,
+    var(--unihh-c1) 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: unihh-shimmer 9s linear infinite;
+  letter-spacing: 0.02em;
+}
+
+@keyframes unihh-shimmer {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 250% 50%;
+  }
+}
+
+/* 副标题 */
+.vp-hero .vp-hero-description,
+.vp-hero p {
+  opacity: 0.92;
+}
+
+/* 主视觉截图:悬浮 + 光晕 */
+.vp-hero-image {
+  position: relative;
+}
+
+.vp-hero-image img {
+  border-radius: 14px;
+  border: 1px solid var(--unihh-border);
+  box-shadow:
+    0 24px 64px var(--unihh-shadow-strong),
+    0 6px 18px var(--unihh-shadow);
+  animation: unihh-float 7s ease-in-out infinite;
+  transition: transform 0.5s ease;
+}
+
+@keyframes unihh-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+/* Hero 按钮组 */
+.vp-hero-actions .vp-hero-action-button {
+  border-radius: 10px;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.vp-hero-actions .vp-hero-action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px var(--unihh-shadow-strong);
+}
+
+/* —— 特性卡片:玻璃质感 + 悬浮 —— */
+.vp-features .vp-feature {
+  background: var(--unihh-glass);
+  border: 1px solid var(--unihh-border);
+  border-radius: 14px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.vp-features .vp-feature:hover {
+  transform: translateY(-4px);
+  border-color: rgba(30, 111, 255, 0.4);
+  box-shadow:
+    0 14px 40px var(--unihh-shadow-strong),
+    0 4px 12px var(--unihh-shadow);
+}
+
+/* —— 页脚 —— */
+.vp-footer {
+  background: transparent !important;
+  border-top: 1px solid var(--unihh-border);
+}
+
+/* —— 内容页细节 —— */
+/* 自定义首页:内容区全宽、隐藏页脚导航等默认元素 */
+.unihh-home-page .theme-default-content {
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+.unihh-home-page .vp-page-nav,
+.unihh-home-page .vp-page-meta {
+  display: none;
+}
+
+/* 二级标题使用主题色淡分隔线 */
+.theme-default-content h2 {
+  border-bottom: 1px solid var(--unihh-border) !important;
+}
+
+/* 代码块与表格:半透明底,保持背景可见的同时不损失可读性 */
+.theme-default-content div[class*='language-'],
+.theme-default-content table {
+  border-radius: 10px;
+}
+
+/* 文本选中 */
+::selection {
+  background: rgba(30, 111, 255, 0.2);
+}
+
+/* 细滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 111, 255, 0.28);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(30, 111, 255, 0.45);
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: rgba(125, 211, 252, 0.25);
+}
+
+/* —— 侧边栏链接激活强调 —— */
+.vp-sidebar a.router-link-active {
+  position: relative;
+}
+
+/* —— 减弱动效偏好:全部静止 —— */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  .vp-hero h1,
+  .vp-hero-image img,
+  .vp-hero-actions .vp-hero-action-button,
+  .vp-features .vp-feature {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* 平滑滚动 */
+html {
+  scroll-behavior: smooth;
+}

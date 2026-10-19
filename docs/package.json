@@ -1,0 +1,22 @@
+{
+  "name": "unihh-iot-docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "UNIHH-IOT 官方操作文档",
+  "scripts": {
+    "dev": "vuepress dev .",
+    "build": "vuepress build .",
+    "clean": "rimraf .vuepress/.temp .vuepress/.cache .vuepress/dist"
+  },
+  "devDependencies": {
+    "@vuepress/bundler-vite": "^2.0.0-rc.0",
+    "@vuepress/plugin-search": "^2.0.0-rc.0",
+    "@vuepress/theme-default": "^2.0.0-rc.0",
+    "rimraf": "^5.0.5",
+    "sass-embedded": "^1.105.1",
+    "vuepress": "^2.0.0-rc.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
