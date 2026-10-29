@@ -4,6 +4,16 @@
 
 # UNIHH-IOT 物联网数据采集与管理平台系统设计
 
+[![UNIHH-IOT](https://img.shields.io/badge/UNIHH--IOT-Platform-blue.svg?style=flat-square)](https://github.com/unihh-iot/UNIHH)
+[![JDK 17](https://img.shields.io/badge/JDK-17+-orange.svg?style=flat-square&logo=openjdk&logoColor=white)](https://adoptium.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.18-brightgreen.svg?style=flat-square&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1.svg?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Redis](https://img.shields.io/badge/Redis-6.0+-DC382D.svg?style=flat-square&logo=redis&logoColor=white)](https://redis.io/)
+[![EMQX](https://img.shields.io/badge/EMQX-5.x-009A61.svg?style=flat-square&logo=mqtt&logoColor=white)](https://www.emqx.com/)
+[![TDengine](https://img.shields.io/badge/TDengine-3.x-006BE6.svg?style=flat-square)](https://tdengine.com/)
+[![GitHub stars](https://img.shields.io/github/stars/unihh-iot/UNIHH?style=flat-square&logo=github)](https://github.com/unihh-iot/UNIHH/stargazers)
+[![Gitee stars](https://gitee.com/giteeRepo/unihh/badge/star.svg?theme=dark)](https://gitee.com/giteeRepo/unihh/stargazers)
+
 ## 1. 项目概述
 
 UNIHH-IOT 是一套面向现代智能工业制造与物联网边缘协同场景的高性能、轻量化数据采集与设备资产管理平台。平台提供多协议南向数采接入、物模型动态建模、分布式规则计算、多存储引擎路由以及北向反向控制与通道生命周期管理能力。

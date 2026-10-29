@@ -4,6 +4,16 @@
 
 # UNIHH-IOT Industrial IoT Data Acquisition & Device Management Platform
 
+[![UNIHH-IOT](https://img.shields.io/badge/UNIHH--IOT-Platform-blue.svg?style=flat-square)](https://github.com/unihh-iot/UNIHH)
+[![JDK 17](https://img.shields.io/badge/JDK-17+-orange.svg?style=flat-square&logo=openjdk&logoColor=white)](https://adoptium.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.18-brightgreen.svg?style=flat-square&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1.svg?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Redis](https://img.shields.io/badge/Redis-6.0+-DC382D.svg?style=flat-square&logo=redis&logoColor=white)](https://redis.io/)
+[![EMQX](https://img.shields.io/badge/EMQX-5.x-009A61.svg?style=flat-square&logo=mqtt&logoColor=white)](https://www.emqx.com/)
+[![TDengine](https://img.shields.io/badge/TDengine-3.x-006BE6.svg?style=flat-square)](https://tdengine.com/)
+[![GitHub stars](https://img.shields.io/github/stars/unihh-iot/UNIHH?style=flat-square&logo=github)](https://github.com/unihh-iot/UNIHH/stargazers)
+[![Gitee stars](https://gitee.com/giteeRepo/unihh/badge/star.svg?theme=dark)](https://gitee.com/giteeRepo/unihh/stargazers)
+
 ## 1. Project Overview
 
 UNIHH-IOT is a high-performance, lightweight industrial IoT data acquisition and asset management platform designed for modern intelligent manufacturing and edge-cloud collaboration scenarios. The platform provides south-bound multi-protocol data acquisition, dynamic thing-model abstraction, distributed rule computing, multi-engine persistence routing, and north-bound reverse control with physical channel lifecycle management.
