@@ -419,8 +419,8 @@
                 <div class="slider-wrapper margin-top-small">
                   <el-slider
                     v-model="writeFormValue"
-                    :min="currentProperty.min ?? 0"
-                    :max="currentProperty.max ?? 500"
+                    :min="computedSliderMin"
+                    :max="computedSliderMax"
                     :step="isFloatingType(currentProperty.dataType) ? 0.01 : 1"
                   />
                 </div>
@@ -429,8 +429,6 @@
                     v-model="writeFormValue"
                     :precision="isFloatingType(currentProperty.dataType) ? 4 : 0"
                     :step="isFloatingType(currentProperty.dataType) ? 0.01 : 1"
-                    :min="currentProperty.min ?? 0"
-                    :max="currentProperty.max ?? 500"
                     style="flex: 1;"
                   />
                   <!-- Quick Preset Percentage Buttons -->
@@ -1341,7 +1339,7 @@ const onPropertySelectChange = (id) => {
       } else if (prop.dataType === 'ENUM' && prop.options && prop.options.length > 0) {
         writeFormValue.value = prop.options[0].value
       } else {
-        writeFormValue.value = prop.default !== undefined ? prop.default : (prop.min ?? 0)
+        writeFormValue.value = (prop.default !== undefined && prop.default !== null) ? prop.default : 0
       }
     }
   } else {
@@ -1356,13 +1354,27 @@ const isFloatingType = (dt) => {
   return t === 'DOUBLE' || t === 'FLOAT'
 }
 
-const setPresetValue = (pct) => {
-  if (currentProperty.value) {
-    const min = currentProperty.value.min ?? 0
-    const max = currentProperty.value.max ?? 100
-    const val = min + (max - min) * pct
-    writeFormValue.value = isFloatingType(currentProperty.value.dataType) ? parseFloat(val.toFixed(4)) : Math.round(val)
+const computedSliderMin = computed(() => {
+  const curVal = Number(writeFormValue.value)
+  if (!isNaN(curVal) && curVal < 0) {
+    return curVal
   }
+  return 0
+})
+
+const computedSliderMax = computed(() => {
+  const curVal = Number(writeFormValue.value)
+  if (!isNaN(curVal) && curVal > 100) {
+    return curVal
+  }
+  return 100
+})
+
+const setPresetValue = (pct) => {
+  const min = computedSliderMin.value
+  const max = computedSliderMax.value
+  const val = min + (max - min) * pct
+  writeFormValue.value = isFloatingType(currentProperty.value?.dataType) ? parseFloat(val.toFixed(4)) : Math.round(val)
 }
 
 const onServiceSelectChange = (id) => {
@@ -1445,7 +1457,7 @@ const openControlPanel = async (row) => {
           const pName = p.pointName || p.name || ident
           const mode = (mapped && mapped.rwMode ? mapped.rwMode : (p.accessMode || p.rwMode || 'R')).toUpperCase()
           const isWritable = mode === 'RW' || mode === 'W' || mode === 'WRITE'
-          let defaultVal = p.min ?? 0
+          let defaultVal = 0
           if (effectiveDataType === 'BOOL') {
             defaultVal = false
           } else if (effectiveDataType === 'ENUM' && Array.isArray(p.enumOptions) && p.enumOptions.length > 0) {
@@ -1459,8 +1471,6 @@ const openControlPanel = async (row) => {
             dataType: effectiveDataType,
             physicalAddress: mapped ? mapped.physicalAddress : (p.address || ''),
             unit: p.unit || '',
-            min: p.min ?? 0,
-            max: p.max ?? 500,
             default: defaultVal,
             options: (p.enumOptions || []).map(o => ({ label: o.label || o.name || o.text || o.value, value: o.value })),
             description: p.description || `测点 [${ident}]`

@@ -419,6 +419,7 @@
           </el-form-item>
         </template>
 
+
         <el-form-item label="读写模式" prop="accessMode">
           <el-radio-group v-model="propForm.accessMode">
             <el-radio label="R">R (只读上报)</el-radio>
@@ -975,8 +976,6 @@ const openAddPropModal = () => {
     pointName: '',
     dataType: 'DOUBLE',
     accessMode: 'R',
-    min: 0,
-    max: 500,
     unit: '',
     address: '',
     description: '',
@@ -991,8 +990,8 @@ const openAddPropModal = () => {
 const openEditPropModal = (row) => {
   isPropEdit.value = true
   const data = JSON.parse(JSON.stringify(row))
-  if (data.min === undefined) data.min = 0
-  if (data.max === undefined) data.max = 500
+  delete data.min
+  delete data.max
   if (!data.enumOptions) {
     data.enumOptions = [
       { value: 0, label: '关 / OFF / 模式0' },
@@ -1008,11 +1007,14 @@ const submitPropForm = () => {
     if (valid) {
       try {
         const modelKey = selectedModel.value.modelCode || selectedModel.value.modelKey
+        const submitData = { ...propForm.value }
+        delete submitData.min
+        delete submitData.max
         if (isPropEdit.value) {
-          await updateProperty(modelKey, propForm.value.pointCode, propForm.value)
+          await updateProperty(modelKey, submitData.pointCode, submitData)
           ElMessage.success('属性点位更新成功')
         } else {
-          await addProperty(modelKey, propForm.value)
+          await addProperty(modelKey, submitData)
           ElMessage.success('属性点位新增成功')
         }
         propDialogVisible.value = false
