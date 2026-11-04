@@ -22,6 +22,8 @@ package com.unihh.iot.admin.aspect;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.unihh.iot.admin.annotation.AuditLog;
+import com.unihh.iot.admin.model.LoginRequest;
+import com.unihh.iot.admin.model.LoginResponse;
 import com.unihh.iot.admin.service.LogService;
 import com.unihh.iot.common.model.IotLog;
 import com.unihh.iot.common.model.R;
@@ -64,6 +66,7 @@ public class AuditLogAspect {
         // 提取请求上下文信息 (在调用线程中获取)
         String operator = "admin";
         String clientIp = "127.0.0.1";
+        String userAgent = "Web Console";
         String deviceId = null;
         String modelKey = null;
 
@@ -73,6 +76,10 @@ public class AuditLogAspect {
                 HttpServletRequest request = attributes.getRequest();
                 clientIp = getClientIp(request);
                 operator = getOperator(request);
+                String ua = request.getHeader("User-Agent");
+                if (ua != null && !ua.trim().isEmpty()) {
+                    userAgent = ua.trim();
+                }
             }
         } catch (Exception ignored) {}
 
@@ -93,6 +100,21 @@ public class AuditLogAspect {
                         continue;
                     }
                     String name = (paramNames != null && i < paramNames.length) ? paramNames[i] : ("arg" + i);
+
+                    // 敏感认证参数脱敏并提取真实登录操作人
+                    if (arg instanceof LoginRequest) {
+                        LoginRequest lr = (LoginRequest) arg;
+                        if (lr.getUsername() != null && !lr.getUsername().trim().isEmpty()) {
+                            operator = lr.getUsername().trim();
+                        }
+                        Map<String, Object> safeParam = new LinkedHashMap<>();
+                        safeParam.put("username", lr.getUsername());
+                        safeParam.put("rememberMe", lr.getRememberMe());
+                        safeParam.put("password", "******");
+                        paramMap.put(name, safeParam);
+                        continue;
+                    }
+
                     paramMap.put(name, arg);
 
                     // 动态探测关联的 deviceId 或 modelKey
@@ -122,6 +144,11 @@ public class AuditLogAspect {
                 if (r.getCode() != 200) {
                     isSuccess = false;
                     errorMsg = r.getMsg();
+                } else if (r.getData() instanceof LoginResponse) {
+                    LoginResponse lr = (LoginResponse) r.getData();
+                    if (lr.getUser() != null && lr.getUser().getUsername() != null && !lr.getUser().getUsername().trim().isEmpty()) {
+                        operator = lr.getUser().getUsername().trim();
+                    }
                 }
             }
             return result;
@@ -131,11 +158,11 @@ public class AuditLogAspect {
             throw t;
         } finally {
             long costMs = System.currentTimeMillis() - startMs;
-            saveAuditLog(auditLog, operator, clientIp, deviceId, modelKey, paramsSnapshot, isSuccess, errorMsg, costMs);
+            saveAuditLog(auditLog, operator, clientIp, userAgent, deviceId, modelKey, paramsSnapshot, isSuccess, errorMsg, costMs);
         }
     }
 
-    private void saveAuditLog(AuditLog auditLog, String operator, String clientIp, String deviceId, String modelKey,
+    private void saveAuditLog(AuditLog auditLog, String operator, String clientIp, String userAgent, String deviceId, String modelKey,
                               String paramsSnapshot, boolean isSuccess, String errorMsg, long costMs) {
         if (logService == null) return;
         try {
@@ -147,15 +174,22 @@ public class AuditLogAspect {
             detailObj.put("action", auditLog.action());
             detailObj.put("params", paramsSnapshot != null ? paramsSnapshot : "");
             detailObj.put("ip", clientIp);
+            detailObj.put("browser", userAgent != null ? userAgent : "Web Console");
             detailObj.put("costMs", costMs);
             detailObj.put("status", isSuccess ? "SUCCESS" : "FAILED");
             if (errorMsg != null) {
                 detailObj.put("error", errorMsg);
             }
 
+            // 判断日志类型: 用户认证 / 登录 / 注销固定归类为 SYSTEM (用户登录审计日志)
+            String logType = auditLog.logType();
+            if ("用户认证".equals(auditLog.module()) || auditLog.action().contains("登录") || auditLog.action().contains("注销")) {
+                logType = "SYSTEM";
+            }
+
             IotLog logEntry = new IotLog();
             logEntry.setLogId(logId);
-            logEntry.setLogType("OPERATION");
+            logEntry.setLogType(logType);
             logEntry.setLevel(isSuccess ? "INFO" : "ERROR");
             logEntry.setOperator(operator);
             logEntry.setDeviceId(deviceId);

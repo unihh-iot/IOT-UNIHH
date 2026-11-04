@@ -48,8 +48,14 @@ public class LogDao {
             params.add(kw);
         }
         if (logType != null && !logType.trim().isEmpty()) {
-            sql.append("AND log_type = ? ");
-            params.add(logType.trim());
+            if ("OPERATION".equalsIgnoreCase(logType.trim())) {
+                sql.append("AND log_type = 'OPERATION' AND content NOT LIKE '%\"module\":\"用户认证\"%' AND content NOT LIKE '%\"action\":\"用户登录\"%' AND content NOT LIKE '%\"action\":\"注销登录\"%' ");
+            } else if ("SYSTEM".equalsIgnoreCase(logType.trim())) {
+                sql.append("AND (log_type = 'SYSTEM' OR content LIKE '%\"module\":\"用户认证\"%' OR content LIKE '%\"action\":\"用户登录\"%' OR content LIKE '%\"action\":\"注销登录\"%') ");
+            } else {
+                sql.append("AND log_type = ? ");
+                params.add(logType.trim());
+            }
         }
         if (level != null && !level.trim().isEmpty()) {
             sql.append("AND level = ? ");

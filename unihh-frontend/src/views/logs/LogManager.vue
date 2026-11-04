@@ -36,7 +36,7 @@
         <div class="metric-info">
           <span class="metric-label">今日反控服务下发数</span>
           <div class="metric-val-wrap">
-            <span class="metric-value text-cyan">{{ controlLogList.length }}</span>
+            <span class="metric-value text-cyan">{{ todayControlCount }}</span>
             <span class="metric-unit">次</span>
           </div>
         </div>
@@ -49,8 +49,8 @@
         <div class="metric-info">
           <span class="metric-label">今日用户登录人次</span>
           <div class="metric-val-wrap">
-            <span class="metric-value text-green">{{ loginLogList.length }}</span>
-            <span class="metric-unit">次</span>
+            <span class="metric-value text-green">{{ todayLoginIpCount }}</span>
+            <span class="metric-unit">人次</span>
           </div>
         </div>
       </div>
@@ -227,11 +227,13 @@
               </template>
             </el-table-column>
 
-            <el-table-column prop="username" label="登录账号" width="160">
+            <el-table-column prop="username" label="登录账号 / 操作行为" width="180">
               <template #default="scope">
                 <div class="user-cell">
                   <span class="username-text">{{ scope.row.username }}</span>
-                  <el-tag size="small" type="info" effect="plain">{{ scope.row.userRole }}</el-tag>
+                  <el-tag size="small" :type="scope.row.action === '注销登录' ? 'warning' : 'info'" effect="plain">
+                    {{ scope.row.action || scope.row.userRole || '用户登录' }}
+                  </el-tag>
                 </div>
               </template>
             </el-table-column>
@@ -249,9 +251,15 @@
 
             <el-table-column prop="loginTime" label="登录时间" width="165" />
 
-            <el-table-column label="登录结果" width="110" align="center" fixed="right">
+            <el-table-column label="登录结果" width="120" align="center" fixed="right">
               <template #default="scope">
+                <el-tooltip v-if="scope.row.errorMsg" :content="scope.row.errorMsg" placement="top">
+                  <el-tag type="danger" effect="dark" size="small" style="cursor: pointer;">
+                    失败 ({{ scope.row.errorMsg }})
+                  </el-tag>
+                </el-tooltip>
                 <el-tag
+                  v-else
                   :type="scope.row.status === 'SUCCESS' ? 'success' : 'danger'"
                   effect="dark"
                   size="small"
@@ -511,13 +519,31 @@ const paginatedControlLogs = computed(() => {
   return filteredControlLogs.value.slice(start, start + pageSize.value)
 })
 
+const parseClientBrowser = (ua) => {
+  if (!ua || ua === 'Unknown Browser' || ua === 'Web Console') return 'Web 控制台终端'
+  if (ua.includes('Edg/')) return 'Edge 浏览器 (Chromium)'
+  if (ua.includes('Chrome/')) return 'Chrome 浏览器'
+  if (ua.includes('Firefox/')) return 'Firefox 浏览器'
+  if (ua.includes('Safari/') && !ua.includes('Chrome')) return 'Safari 浏览器'
+  if (ua.length > 40) return ua.substring(0, 40) + '...'
+  return ua
+}
+
+const parseLocation = (ip) => {
+  if (!ip || ip === '127.0.0.1' || ip === 'localhost') return '本机控制台 (Localhost)'
+  if (ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.')) return '局域网控制台 (LAN)'
+  return '互联网访问'
+}
+
 const filteredLoginLogs = computed(() => {
   return loginLogList.value.filter(item => {
     const kw = (activeLoginQueryParams.value.keyword || '').toLowerCase().trim()
     const matchKw = !kw ||
       (item.id && item.id.toString().toLowerCase().includes(kw)) ||
       (item.username && item.username.toLowerCase().includes(kw)) ||
+      (item.action && item.action.toLowerCase().includes(kw)) ||
       (item.ipAddress && item.ipAddress.toLowerCase().includes(kw)) ||
+      (item.location && item.location.toLowerCase().includes(kw)) ||
       (item.clientBrowser && item.clientBrowser.toLowerCase().includes(kw))
     const matchStatus = !activeLoginQueryParams.value.status || item.status === activeLoginQueryParams.value.status
     return matchKw && matchStatus
@@ -547,6 +573,91 @@ const paginatedOperationLogs = computed(() => {
   return filteredOperationLogs.value.slice(start, start + pageSize.value)
 })
 
+// 日期判定辅助函数: 判断时间戳或日期字符串是否为今天
+const isTodayDate = (val) => {
+  if (!val) return false
+  let d = null
+  if (val instanceof Date) {
+    d = val
+  } else if (typeof val === 'number') {
+    d = new Date(val)
+  } else if (typeof val === 'string') {
+    d = new Date(val.replace(/-/g, '/'))
+    if (isNaN(d.getTime())) d = new Date(val)
+  }
+  if (!d || isNaN(d.getTime())) return false
+  const today = new Date()
+  return d.getFullYear() === today.getFullYear() &&
+         d.getMonth() === today.getMonth() &&
+         d.getDate() === today.getDate()
+}
+
+// 今日用户登录人次 (精确过滤: 仅统计今日、排除注销登录、排除登录失败，并按登录客户端 IP 进行独立去重)
+const todayLoginIpCount = computed(() => {
+  const todayValidLogins = loginLogList.value.filter(item => {
+    // 1. 过滤今日产生
+    const dateVal = item.rawCreateTime || item.loginTime
+    if (!isTodayDate(dateVal)) return false
+
+    // 2. 严格排除注销登录行为
+    const act = (item.action || item.userRole || '').trim()
+    if (act.includes('注销') || act === '注销登录') return false
+
+    // 3. 排除登录失败的异常记录
+    if (item.status && item.status !== 'SUCCESS') return false
+
+    return true
+  })
+
+  // 4. 按登录客户端 IP 进行独立去重统计
+  const uniqueIps = new Set()
+  todayValidLogins.forEach(item => {
+    const ip = (item.ipAddress || '').trim()
+    if (ip && ip !== '-' && ip !== 'unknown') {
+      uniqueIps.add(ip)
+    }
+  })
+
+  return uniqueIps.size
+})
+
+// 今日反控服务下发数 (过滤仅统计今日产生的下发指令)
+const todayControlCount = computed(() => {
+  return controlLogList.value.filter(item => {
+    return isTodayDate(item.rawCreateTime || item.executionTime)
+  }).length
+})
+
+// 统一的登录日志实体映射转换器
+const mapLoginLogItem = (item) => {
+  let parsed = null
+  if (item.content) {
+    try {
+      parsed = JSON.parse(item.content)
+    } catch (e) {}
+  }
+
+  const ip = parsed?.ip || '127.0.0.1'
+  const browser = parsed?.browser || parsed?.clientBrowser || 'Web 控制台终端'
+  const action = parsed?.action || (item.content && item.content.includes('注销') ? '注销登录' : '用户登录')
+  const status = parsed?.status || (item.level === 'WARN' || item.level === 'ERROR' ? 'FAILED' : 'SUCCESS')
+  const errorMsg = parsed?.error || (status === 'FAILED' ? (item.level === 'ERROR' ? '用户名或密码错误' : '') : '')
+
+  return {
+    id: item.logId || item.id,
+    username: item.operator || 'admin',
+    action: action,
+    userRole: action,
+    ipAddress: ip,
+    location: parseLocation(ip),
+    clientBrowser: parseClientBrowser(browser),
+    errorMsg: errorMsg,
+    rawCreateTime: item.createTime,
+    loginTime: item.createTime ? new Date(item.createTime).toLocaleString() : new Date().toLocaleString(),
+    status: status
+  }
+}
+
 const fetchControlLogsFromApi = async () => {
   try {
     const params = { logType: 'COMMAND' }
@@ -563,6 +674,7 @@ const fetchControlLogsFromApi = async () => {
         serviceCode: item.logType || 'SERVICE',
         paramsSnapshot: item.content,
         latency: '15 ms',
+        rawCreateTime: item.createTime,
         executionTime: item.createTime ? new Date(item.createTime).toLocaleString() : new Date().toLocaleString(),
         status: item.level === 'ERROR' ? 'FAILED' : 'SUCCESS'
       }))
@@ -583,16 +695,7 @@ const fetchLoginLogsFromApi = async () => {
     const data = (res && res.data) ? res.data : res
     if (data) {
       const list = Array.isArray(data) ? data : (data.list || [])
-      loginLogList.value = list.map(item => ({
-        id: item.logId || item.id,
-        username: item.operator || 'admin',
-        userRole: '系统账号',
-        ipAddress: '192.168.1.120',
-        location: '局域网 (控制台终端)',
-        clientBrowser: 'Chrome 128 (Windows 11)',
-        loginTime: item.createTime ? new Date(item.createTime).toLocaleString() : new Date().toLocaleString(),
-        status: item.level === 'WARN' || item.level === 'ERROR' ? 'FAILED' : 'SUCCESS'
-      }))
+      loginLogList.value = list.map(mapLoginLogItem)
     } else {
       loginLogList.value = []
     }
@@ -610,12 +713,24 @@ const fetchOperationLogsFromApi = async () => {
     const data = (res && res.data) ? res.data : res
     if (data) {
       const list = Array.isArray(data) ? data : (data.list || [])
-      operationLogList.value = list.map(item => {
+      const opLogs = []
+      const loginLogsFoundInOp = []
+
+      list.forEach(item => {
         let parsed = null
         if (item.content) {
           try {
             parsed = JSON.parse(item.content)
           } catch (e) {}
+        }
+
+        const isAuthLog = (parsed?.module === '用户认证') ||
+                          (parsed?.action && (parsed.action.includes('登录') || parsed.action.includes('注销'))) ||
+                          (item.content && (item.content.includes('用户认证') || item.content.includes('登录') || item.content.includes('注销')))
+
+        if (isAuthLog) {
+          loginLogsFoundInOp.push(mapLoginLogItem(item))
+          return
         }
 
         let parsedModule = parsed?.module
@@ -641,7 +756,7 @@ const fetchOperationLogsFromApi = async () => {
           }
         }
 
-        return {
+        opLogs.push({
           id: item.logId || item.id,
           operator: item.operator || 'admin',
           module: parsedModule || '系统管理',
@@ -650,9 +765,25 @@ const fetchOperationLogsFromApi = async () => {
           fullSnapshot: parsed ? JSON.stringify(parsed, null, 2) : (item.content || ''),
           ipAddress: parsedIp || '127.0.0.1',
           status: parsedStatus,
+          rawCreateTime: item.createTime,
           opTime: item.createTime ? new Date(item.createTime).toLocaleString() : new Date().toLocaleString()
-        }
+        })
       })
+
+      operationLogList.value = opLogs
+
+      // 如果在 OPERATION 响应中包含了认证/登录/注销日志（例如遗留旧数据），智能合并入 loginLogList 并按时间去重倒序
+      if (loginLogsFoundInOp.length > 0) {
+        const existingIds = new Set(loginLogList.value.map(l => l.id))
+        const newToAdd = loginLogsFoundInOp.filter(l => !existingIds.has(l.id))
+        if (newToAdd.length > 0) {
+          loginLogList.value = [...loginLogList.value, ...newToAdd].sort((a, b) => {
+            const timeA = new Date((a.rawCreateTime || a.loginTime || '').toString().replace(/-/g, '/')).getTime() || 0
+            const timeB = new Date((b.rawCreateTime || b.loginTime || '').toString().replace(/-/g, '/')).getTime() || 0
+            return timeB - timeA
+          })
+        }
+      }
     } else {
       operationLogList.value = []
     }

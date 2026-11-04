@@ -43,4 +43,9 @@ public @interface AuditLog {
      * 是否记录请求入参 JSON
      */
     boolean saveParams() default true;
+
+    /**
+     * 日志审计分类: OPERATION (系统业务操作审计), SYSTEM (系统与用户认证安全审计)
+     */
+    String logType() default "OPERATION";
 }

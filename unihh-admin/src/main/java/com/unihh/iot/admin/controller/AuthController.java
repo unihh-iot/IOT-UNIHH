@@ -40,7 +40,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    @AuditLog(module = "用户认证", action = "用户登录")
+    @AuditLog(module = "用户认证", action = "用户登录", logType = "SYSTEM")
     public R<LoginResponse> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         String clientIp = httpRequest.getHeader("X-Forwarded-For");
         if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
@@ -75,7 +75,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    @AuditLog(module = "用户认证", action = "注销登录")
+    @AuditLog(module = "用户认证", action = "注销登录", logType = "SYSTEM")
     public R<String> logout(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         if (token != null && !token.trim().isEmpty()) {
