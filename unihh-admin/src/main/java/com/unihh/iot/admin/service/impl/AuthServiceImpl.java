@@ -48,6 +48,9 @@ public class AuthServiceImpl implements AuthService {
     private SysMenuDao sysMenuDao;
 
     @Autowired
+    private com.unihh.iot.admin.service.SysMenuService sysMenuService;
+
+    @Autowired
     private com.unihh.iot.admin.security.TokenSessionManager tokenSessionManager;
 
     @Override
@@ -88,8 +91,8 @@ public class AuthServiceImpl implements AuthService {
         List<String> permissions = sysUserDao.findPermissionsByUserId(user.getId());
         user.setPermissions(permissions);
 
-        // 获取用户关联菜单列表
-        List<SysMenu> menus = sysMenuDao.findMenusByUserId(user.getId());
+        // 获取用户关联菜单列表 (完整树形结构)
+        List<SysMenu> menus = sysMenuService.getRoutesByUserId(user.getId());
 
         // 生成访问 Token (包含用户名标识，以便安全恢复会话)
         String token = "unihh_" + user.getUsername() + "_" + UUID.randomUUID().toString().replace("-", "");
@@ -133,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             return Collections.emptyList();
         }
-        return sysMenuDao.findMenusByUserId(user.getId());
+        return sysMenuService.getRoutesByUserId(user.getId());
     }
 
     @Override

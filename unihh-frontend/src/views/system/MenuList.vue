@@ -334,6 +334,7 @@ async function handleSubmitMenu() {
       }
       menuDialogVisible.value = false;
       loadMenus();
+      window.dispatchEvent(new CustomEvent('unihh:menu-updated'));
     } catch (err) {
       ElMessage.error(err.message || '保存菜单失败');
     } finally {
@@ -359,6 +360,7 @@ async function handleDelete(row) {
     await deleteMenu(row.id);
     ElMessage.success('菜单已成功删除');
     loadMenus();
+    window.dispatchEvent(new CustomEvent('unihh:menu-updated'));
   } catch (action) {
     if (action !== 'cancel') {
       ElMessage.error(action?.message || '删除失败');
