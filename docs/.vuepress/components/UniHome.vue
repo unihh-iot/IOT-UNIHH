@@ -44,13 +44,24 @@
             </svg>
           </a>
           <a class="uni-btn uni-btn--ghost" :href="repo" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" class="uni-btn__icon" aria-hidden="true">
-              <path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
-            </svg>
             GitHub
           </a>
           <a class="uni-btn uni-btn--text" :href="t.links.manual">{{ t.ctaManual }}</a>
         </div>
+        <a class="uni-hero__demo" :href="demoUrl" target="_blank" rel="noopener">
+          <span class="uni-demo__live">
+            <span class="uni-demo__dot"></span>
+            {{ t.ctaDemo }}
+          </span>
+          <span class="uni-demo__url">demo.unihh.com</span>
+          <span class="uni-demo__divider"></span>
+          <span class="uni-demo__cred">
+            {{ t.demoHint }}
+            <code>admin</code>
+            <span class="uni-demo__sep">/</span>
+            <code>unihhiot</code>
+          </span>
+        </a>
         <div class="uni-hero__shot">
           <div class="uni-hero__shot-bar">
             <span></span><span></span><span></span>
@@ -126,6 +137,7 @@ import { withBase } from 'vuepress/client'
 
 const route = useRoute()
 const repo = 'https://github.com/unihh-iot/UNIHH'
+const demoUrl = 'https://demo.unihh.com'
 
 /* 滚动进入视口后逐卡交错上浮 */
 const featuresAnim = ref(false)
@@ -166,6 +178,8 @@ const zh = {
   sub: '设备采集、反向控制、规则告警，前后端代码全部开放。',
   shotAlt: 'UNIHH-IOT 监控大盘',
   ctaQuickstart: '快速开始',
+  ctaDemo: '在线演示',
+  demoHint: '演示账号：',
   ctaManual: '操作手册 →',
   ctaStart: '立即上手',
   links: {
@@ -200,6 +214,8 @@ const en = {
   sub: 'Device acquisition, reverse control and rule-based alerting — fully open, front to back.',
   shotAlt: 'UNIHH-IOT dashboard',
   ctaQuickstart: 'Get Started',
+  ctaDemo: 'Live Demo',
+  demoHint: 'Demo account:',
   ctaManual: 'User Manual →',
   ctaStart: 'Start Now',
   links: {
@@ -393,7 +409,8 @@ html[data-theme='dark'] .uni-home {
 
 .uni-btn--ghost:hover {
   transform: translateY(-2px);
-  border-color: rgba(30, 111, 255, 0.4);
+  color: var(--uh-c1) !important;
+  border-color: color-mix(in srgb, var(--uh-c1) 45%, transparent);
 }
 
 .uni-btn--text {
@@ -419,6 +436,107 @@ html[data-theme='dark'] .uni-home {
 .uni-btn--lg {
   padding: 13px 30px;
   font-size: 16px;
+}
+
+/* ===== 在线演示条 ===== */
+/* 禁用任何来源(主题/缓存)注入的伪元素箭头 */
+.uni-hero__demo::before,
+.uni-hero__demo::after {
+  content: none !important;
+  display: none !important;
+}
+
+.uni-hero__demo {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 28px auto 0;
+  padding: 11px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--uh-card-border);
+  background: var(--uh-card-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13.5px;
+  color: var(--uh-text);
+  text-decoration: none !important;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.uni-hero__demo:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--uh-c1) 45%, transparent);
+  box-shadow: 0 12px 32px var(--uh-glow);
+}
+
+.uni-demo__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+}
+
+.uni-demo__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: uni-pulse 2.2s ease-out infinite;
+}
+
+@keyframes uni-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.uni-demo__url {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-weight: 600;
+  color: var(--uh-c1);
+}
+
+.uni-demo__divider {
+  width: 1px;
+  height: 16px;
+  background: var(--uh-card-border);
+}
+
+.uni-demo__cred {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--uh-muted);
+}
+
+.uni-demo__cred code {
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--uh-card-border);
+  background: var(--uh-card-bg);
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--uh-c1);
+}
+
+.uni-demo__sep {
+  color: var(--uh-muted);
+}
+
+@media (max-width: 560px) {
+  .uni-demo__divider {
+    display: none;
+  }
 }
 
 /* ===== Hero screenshot ===== */
@@ -825,7 +943,8 @@ html[data-theme='dark'] .uni-home {
   .uni-hero__shot,
   .uni-btn,
   .uni-card,
-  .uni-card__icon {
+  .uni-card__icon,
+  .uni-demo__dot {
     animation: none !important;
     transition: none !important;
   }
