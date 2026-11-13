@@ -15,6 +15,27 @@ Check in order:
 
 The recommended order is `gateway → admin → data → drivers`. A driver started before admin still registers fine (admin re-syncs registrations when it comes up), but MySQL and EMQX must be ready first.
 
+### Services keep restarting after docker compose up?
+
+The usual cause is MySQL still passing its health check: `unihh-admin` depends on the `service_healthy` condition, and on first start MySQL runs the full `db/unihh_iot.sql` import, which can take 1–2 minutes. Check in order:
+
+1. `docker compose ps` — is `unihh-mysql` healthy yet?
+2. `docker compose logs unihh-mysql` — did the import fail?
+3. `docker compose logs unihh-admin` — DB connection errors resolve on their own once MySQL is ready (`restart: always`).
+
+### A host port is already taken (3306 / 1883 / 28000)?
+
+Change the **left (host) side** of the mapping in `docker-compose.yml` — the container side must stay — e.g. `"3306:3306"` → `"13306:3306"`, and update every connection string that references that port. If EMQX's 1883 bus port moves, adjust `EMQX_SERVER_URI` on all services and drivers.
+
+### How do I reset the Docker environment completely?
+
+```bash
+docker compose down -v   # stop and remove containers plus the mysql_data volume
+docker compose up -d     # start again; MySQL re-runs the init script
+```
+
+`down -v` deletes all business data — back up first (see [Deployment](../guide/deploy.md#upgrading-the-container-stack)).
+
 ### Will it run on minimal hardware?
 
 Yes. Core services take `-Xmx128m` and drivers `-Xmx64m` (see [Deployment](../guide/deploy.md#jvm-memory-tuning)). A 2 GB Raspberry Pi can host the minimal system: EMQX + three services + one driver.

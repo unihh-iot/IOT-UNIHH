@@ -10,6 +10,32 @@
         <h1 class="uni-hero__title">UNIHH-IOT</h1>
         <p class="uni-hero__tagline">{{ t.tagline }}</p>
         <p class="uni-hero__sub">{{ t.sub }}</p>
+        <div class="uni-hero__shields">
+          <span class="uni-shield">
+            <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="Apache 2.0 License" loading="lazy" />
+          </span>
+          <span class="uni-shield">
+            <img src="https://img.shields.io/badge/JDK-17%2B-orange?style=flat-square&logo=openjdk&logoColor=white" alt="JDK 17+" loading="lazy" />
+          </span>
+          <span class="uni-shield">
+            <img src="https://img.shields.io/badge/Spring%20Boot-2.7.18-brightgreen?style=flat-square&logo=springboot&logoColor=white" alt="Spring Boot 2.7.18" loading="lazy" />
+          </span>
+          <span class="uni-shield">
+            <img src="https://img.shields.io/badge/EMQX-5.x-009A61?style=flat-square&logo=mqtt&logoColor=white" alt="EMQX 5.x" loading="lazy" />
+          </span>
+          <span class="uni-shield">
+            <img src="https://img.shields.io/badge/Docker-Compose%20%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker Compose" loading="lazy" />
+          </span>
+          <span class="uni-shield">
+            <img src="https://img.shields.io/github/stars/unihh-iot/UNIHH?style=flat-square&logo=github" alt="GitHub stars" loading="lazy" />
+          </span>
+          <span class="uni-shield">
+            <img src="https://gitee.com/giteeRepo/unihh/badge/star.svg?theme=dark" alt="Gitee stars" loading="lazy" />
+          </span>
+          <span class="uni-shield">
+            <img src="https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E6%BC%94%E7%A4%BA-demo.unihh.com-1e6fff?style=flat-square" alt="Online demo" loading="lazy" />
+          </span>
+        </div>
         <div class="uni-hero__actions">
           <a class="uni-btn uni-btn--primary" :href="t.links.quickstart">
             {{ t.ctaQuickstart }}
@@ -49,16 +75,23 @@
       <p class="uni-sec__overline">{{ t.featuresOverline }}</p>
       <h2 class="uni-sec__title">{{ t.featuresTitle }}</h2>
       <p class="uni-sec__desc">{{ t.featuresDesc }}</p>
-      <div class="uni-features__grid">
+      <div class="uni-features__grid" :class="{ 'uni-features__grid--anim': featuresAnim }">
         <a
-          v-for="f in t.features"
+          v-for="(f, i) in t.features"
           :key="f.title"
           class="uni-card"
+          :class="{ 'is-visible': visibleAll }"
+          :style="{ '--acc': f.accent, '--d': i }"
           :href="f.link"
         >
+          <span class="uni-card__num">0{{ i + 1 }}</span>
           <span class="uni-card__icon" v-html="f.icon"></span>
           <h3 class="uni-card__title">{{ f.title }}</h3>
           <p class="uni-card__desc">{{ f.desc }}</p>
+          <span class="uni-card__more">
+            {{ t.more }}
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </span>
         </a>
       </div>
     </section>
@@ -87,12 +120,38 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { withBase } from 'vuepress/client'
 
 const route = useRoute()
 const repo = 'https://github.com/unihh-iot/UNIHH'
+
+/* 滚动进入视口后逐卡交错上浮 */
+const featuresAnim = ref(false)
+const visibleAll = ref(false)
+let io = null
+
+onMounted(() => {
+  const grid = document.querySelector('.uni-features__grid')
+  if (!grid || !('IntersectionObserver' in window)) return
+  featuresAnim.value = true
+  io = new IntersectionObserver(
+    (entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        visibleAll.value = true
+        io.disconnect()
+        io = null
+      }
+    },
+    { threshold: 0.15 },
+  )
+  io.observe(grid)
+})
+
+onBeforeUnmount(() => {
+  if (io) io.disconnect()
+})
 
 const iconCpu = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="10" y="10" width="4" height="4"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>'
 const iconBlocks = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg>'
@@ -123,13 +182,14 @@ const zh = {
   featuresTitle: '为工业现场而生',
   featuresDesc: '从总线互斥到进程隔离，每个设计都来自真实的产线与泵站场景。',
   features: [
-    { icon: iconCpu, title: '多协议采集', desc: 'Modbus、S7、OPC UA 驱动开箱即用，覆盖主流工业设备。', link: withBase('/manual/drivers.html') },
-    { icon: iconBlocks, title: '驱动进程隔离', desc: '每个协议独立微服务运行，单驱动故障不扩散、随启随停。', link: withBase('/guide/architecture.html') },
-    { icon: iconLock, title: '读写公平互斥', desc: '通道级锁串行采集与反写，RS485 总线不再粘包错帧。', link: withBase('/manual/devices.html') },
-    { icon: iconFeather, title: '边缘级轻量', desc: '核心服务 128MB、单驱动 64MB 以内，树莓派全天候常驻。', link: withBase('/guide/deploy.html') },
-    { icon: iconBell, title: '规则与告警', desc: '阈值、区间、越界三类判定，异常秒级联动与记录。', link: withBase('/manual/rules.html') },
-    { icon: iconDatabase, title: '多引擎存储', desc: 'TDengine 等 5 种存储策略路由，按业务场景灵活落库。', link: withBase('/manual/data.html') },
+    { icon: iconCpu, title: '多协议采集', desc: 'Modbus、S7、OPC UA 驱动开箱即用，覆盖主流工业设备。', link: withBase('/manual/drivers.html'), accent: '#1e6fff' },
+    { icon: iconBlocks, title: '驱动进程隔离', desc: '每个协议独立微服务运行，单驱动故障不扩散、随启随停。', link: withBase('/guide/architecture.html'), accent: '#06b6d4' },
+    { icon: iconLock, title: '读写公平互斥', desc: '通道级锁串行采集与反写，RS485 总线不再粘包错帧。', link: withBase('/manual/devices.html'), accent: '#8b5cf6' },
+    { icon: iconFeather, title: '边缘级轻量', desc: '核心服务 128MB、单驱动 64MB 以内，树莓派全天候常驻。', link: withBase('/guide/deploy.html'), accent: '#10b981' },
+    { icon: iconBell, title: '规则与告警', desc: '阈值、区间、越界三类判定，异常秒级联动与记录。', link: withBase('/manual/rules.html'), accent: '#f59e0b' },
+    { icon: iconDatabase, title: '多引擎存储', desc: 'TDengine 等 5 种存储策略路由，按业务场景灵活落库。', link: withBase('/manual/data.html'), accent: '#f43f5e' },
   ],
+  more: '了解更多',
   ctaTitle: '三十分钟，跑通第一条采集链路',
   ctaDesc: '从启动容器到看到实时点位数据，只需按文档逐步执行。',
 }
@@ -156,13 +216,14 @@ const en = {
   featuresTitle: 'Built for the industrial field',
   featuresDesc: 'From bus-level mutex to process isolation, every design choice comes from real production lines and pump stations.',
   features: [
-    { icon: iconCpu, title: 'Multi-protocol', desc: 'Modbus, S7 and OPC UA drivers out of the box for mainstream industrial devices.', link: withBase('/en/manual/drivers.html') },
-    { icon: iconBlocks, title: 'Process isolation', desc: 'Every driver runs as its own microservice — faults stay contained, restart in seconds.', link: withBase('/en/guide/architecture.html') },
-    { icon: iconLock, title: 'Fair bus mutex', desc: 'Channel-level locks serialize reads and writes, ending RS485 framing corruption.', link: withBase('/en/manual/devices.html') },
-    { icon: iconFeather, title: 'Edge-ready', desc: '128MB core and under 64MB per driver — runs around the clock on a Raspberry Pi.', link: withBase('/en/guide/deploy.html') },
-    { icon: iconBell, title: 'Rules & alerts', desc: 'Threshold, range and boundary checks with second-level actions and logging.', link: withBase('/en/manual/rules.html') },
-    { icon: iconDatabase, title: 'Pluggable storage', desc: 'Route writes across five engines including TDengine, per scenario.', link: withBase('/en/manual/data.html') },
+    { icon: iconCpu, title: 'Multi-protocol', desc: 'Modbus, S7 and OPC UA drivers out of the box for mainstream industrial devices.', link: withBase('/en/manual/drivers.html'), accent: '#1e6fff' },
+    { icon: iconBlocks, title: 'Process isolation', desc: 'Every driver runs as its own microservice — faults stay contained, restart in seconds.', link: withBase('/en/guide/architecture.html'), accent: '#06b6d4' },
+    { icon: iconLock, title: 'Fair bus mutex', desc: 'Channel-level locks serialize reads and writes, ending RS485 framing corruption.', link: withBase('/en/manual/devices.html'), accent: '#8b5cf6' },
+    { icon: iconFeather, title: 'Edge-ready', desc: '128MB core and under 64MB per driver — runs around the clock on a Raspberry Pi.', link: withBase('/en/guide/deploy.html'), accent: '#10b981' },
+    { icon: iconBell, title: 'Rules & alerts', desc: 'Threshold, range and boundary checks with second-level actions and logging.', link: withBase('/en/manual/rules.html'), accent: '#f59e0b' },
+    { icon: iconDatabase, title: 'Pluggable storage', desc: 'Route writes across five engines including TDengine, per scenario.', link: withBase('/en/manual/data.html'), accent: '#f43f5e' },
   ],
+  more: 'Learn more',
   ctaTitle: 'Your first acquisition pipeline in 30 minutes',
   ctaDesc: 'From starting the containers to watching live data points — just follow the docs.',
 }
@@ -239,6 +300,26 @@ html[data-theme='dark'] .uni-home {
   border-radius: 50%;
   background: linear-gradient(135deg, var(--uh-c1), var(--uh-c2));
   box-shadow: 0 0 10px var(--uh-glow);
+}
+
+/* ===== Shields badges (display only, no links) ===== */
+.uni-hero__shields {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.uni-shield {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.uni-shield img {
+  height: 20px;
+  width: auto;
 }
 
 .uni-hero__title {
@@ -466,62 +547,181 @@ html[data-theme='dark'] .uni-home {
 }
 
 .uni-card {
+  position: relative;
   display: block;
-  padding: 26px 24px;
+  padding: 28px 26px;
   border: 1px solid var(--uh-card-border);
   border-radius: 16px;
   background: var(--uh-card-bg);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   text-decoration: none !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+/* 顶部渐变细线：hover 自中心展开 */
+.uni-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 14%;
+  width: 72%;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--acc), transparent);
+  opacity: 0;
+  transform: scaleX(0.3);
+  transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 右上角品牌色光斑 */
+.uni-card::after {
+  content: '';
+  position: absolute;
+  top: -36px;
+  right: -36px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--acc) 0%, transparent 68%);
+  opacity: 0.1;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
 }
 
 .uni-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(30, 111, 255, 0.42);
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--acc) 42%, transparent);
   box-shadow:
-    0 18px 44px var(--uh-glow),
-    0 6px 14px rgba(15, 23, 42, 0.08);
+    0 22px 48px -12px color-mix(in srgb, var(--acc) 30%, transparent),
+    0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.uni-card:hover::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.uni-card:hover::after {
+  opacity: 0.32;
+}
+
+/* 右上角 mono 序号 */
+.uni-card__num {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--acc);
+  opacity: 0.12;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.uni-card:hover .uni-card__num {
+  opacity: 0.28;
 }
 
 .uni-card__icon {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 13px;
-  color: var(--uh-c1);
-  background:
-    linear-gradient(135deg, rgba(30, 111, 255, 0.12), rgba(34, 211, 238, 0.14));
-  border: 1px solid var(--uh-card-border);
-  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  color: var(--acc);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--acc) 12%, transparent), color-mix(in srgb, var(--acc) 22%, transparent));
+  border: 1px solid color-mix(in srgb, var(--acc) 22%, transparent);
+  transition: background 0.35s ease, color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
 }
 
 .uni-card__icon :deep(svg) {
-  width: 23px;
-  height: 23px;
+  width: 24px;
+  height: 24px;
 }
 
 .uni-card:hover .uni-card__icon {
   color: #fff;
-  background: linear-gradient(135deg, var(--uh-c1), var(--uh-c2));
+  background: linear-gradient(135deg, var(--acc), color-mix(in srgb, var(--acc) 62%, #000));
   transform: scale(1.06);
+  box-shadow: 0 8px 22px -6px color-mix(in srgb, var(--acc) 55%, transparent);
 }
 
 .uni-card__title {
-  margin: 16px 0 0;
+  position: relative;
+  z-index: 1;
+  margin: 18px 0 0;
   font-size: 17px;
   font-weight: 700;
   color: var(--uh-text);
 }
 
 .uni-card__desc {
+  position: relative;
+  z-index: 1;
   margin: 9px 0 0;
   font-size: 14px;
   line-height: 1.75;
   color: var(--uh-muted);
+}
+
+/* hover 浮现的引导链接（占位不跳动布局） */
+.uni-card__more {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--acc);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.uni-card__more svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.35s ease;
+}
+
+.uni-card:hover .uni-card__more {
+  opacity: 1;
+  transform: none;
+}
+
+.uni-card:hover .uni-card__more svg {
+  transform: translateX(3px);
+}
+
+/* 滚动进入：逐卡交错上浮（animation both 在 delay 期间保持初始态） */
+.uni-features__grid--anim .uni-card.is-visible {
+  animation: uni-card-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--d) * 90ms);
+}
+
+@keyframes uni-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ===== CTA ===== */

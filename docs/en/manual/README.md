@@ -4,7 +4,7 @@ This manual covers every functional page of the UNIHH-IOT platform. It is writte
 
 ## Signing In
 
-Open the frontend URL (`http://localhost:5173` in local development) and sign in. The default super-admin account is `admin` / `unihhiot`.
+Open the frontend URL (`http://localhost:3000` in local development) and sign in. The default super-admin account is `admin` / `unihhiot`.
 
 ![Login](/images/login.png)
 

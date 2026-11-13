@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 756" font-family="-apple-system,'Segoe UI','Microsoft YaHei','PingFang SC',sans-serif">
+  <!-- ===== 画布 ===== -->
+  <rect x="0" y="0" width="1040" height="756" rx="16" fill="#f7f9fd"/>
+  <rect x="0.5" y="0.5" width="1039" height="755" rx="15.5" fill="none" stroke="#dbe4f5"/>
+
+  <!-- ===== L1 物理层 ===== -->
+  <g>
+    <rect x="24" y="20" width="992" height="96" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="20" width="6" height="96" rx="3" fill="#64748b"/>
+    <text x="52" y="46" font-size="15" font-weight="700" fill="#1b2a4a">物理设备与现场工业总线（物理层）</text>
+    <text x="52" y="66" font-size="11" fill="#5a6b8c">PLC · 仪表 · 传感器 · SCADA 上位机</text>
+    <g font-size="12.5" fill="#334155" text-anchor="middle">
+      <rect x="52" y="78" width="210" height="26" rx="13" fill="#f1f5f9" stroke="#e2e8f0"/>
+      <text x="157" y="95">Modbus PLC / 仪表</text>
+      <rect x="282" y="78" width="300" height="26" rx="13" fill="#f1f5f9" stroke="#e2e8f0"/>
+      <text x="432" y="95">西门子 S7-200 SMART / 300 / 1200 / 1500</text>
+      <rect x="602" y="78" width="240" height="26" rx="13" fill="#f1f5f9" stroke="#e2e8f0"/>
+      <text x="722" y="95">OPC UA Server / SCADA</text>
+    </g>
+  </g>
+
+  <!-- 箭头 1 -->
+  <g>
+    <line x1="520" y1="116" x2="520" y2="150" stroke="#94a8c9" stroke-width="1.6"/>
+    <path d="M515 148 L520 156 L525 148 Z" fill="#94a8c9"/>
+    <rect x="386" y="120" width="268" height="22" rx="11" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="520" y="135" font-size="11" fill="#5a6b8c" text-anchor="middle">物理网络（TCP/IP · 串口 RS485）</text>
+  </g>
+
+  <!-- ===== L2 驱动层 ===== -->
+  <g>
+    <rect x="24" y="158" width="992" height="112" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="158" width="6" height="112" rx="3" fill="#1e6fff"/>
+    <text x="52" y="184" font-size="15" font-weight="700" fill="#1b2a4a">分布式独立协议驱动服务（南向驱动层）</text>
+    <text x="52" y="204" font-size="11" fill="#5a6b8c">继承 AbstractDriverPlugin 基类 · BaseDriverMqttManager 自动托管 MQTT 总线通信</text>
+    <g font-size="12.5" text-anchor="middle">
+      <g>
+        <rect x="52" y="216" width="290" height="38" rx="10" fill="#f0f6ff" stroke="#bcd4fb"/>
+        <text x="197" y="233" font-weight="700" fill="#1e6fff">Modbus 驱动</text>
+        <text x="197" y="248" font-size="11" fill="#5a6b8c">unihh-driver-modbus · :28011</text>
+      </g>
+      <g>
+        <rect x="375" y="216" width="290" height="38" rx="10" fill="#f0f6ff" stroke="#bcd4fb"/>
+        <text x="520" y="233" font-weight="700" fill="#1e6fff">西门子 S7 驱动</text>
+        <text x="520" y="248" font-size="11" fill="#5a6b8c">unihh-driver-s7 · :28012</text>
+      </g>
+      <g>
+        <rect x="698" y="216" width="290" height="38" rx="10" fill="#f0f6ff" stroke="#bcd4fb"/>
+        <text x="843" y="233" font-weight="700" fill="#1e6fff">OPC UA 驱动</text>
+        <text x="843" y="248" font-size="11" fill="#5a6b8c">unihh-driver-opcua · :28013</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- 箭头 2 -->
+  <g>
+    <line x1="520" y1="270" x2="520" y2="304" stroke="#94a8c9" stroke-width="1.6"/>
+    <path d="M515 302 L520 310 L525 302 Z" fill="#94a8c9"/>
+    <rect x="340" y="274" width="360" height="22" rx="11" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="520" y="289" font-size="11" fill="#5a6b8c" text-anchor="middle">EMQX MQTT 总线（数据上报 · 心跳 · 遗嘱 · 反控）</text>
+  </g>
+
+  <!-- ===== L3 消息层 ===== -->
+  <g>
+    <rect x="24" y="312" width="992" height="88" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="312" width="6" height="88" rx="3" fill="#009a61"/>
+    <text x="52" y="338" font-size="15" font-weight="700" fill="#1b2a4a">核心工业消息总线（消息层）</text>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="150" y="352" width="300" height="32" rx="10" fill="#ebf9f3" stroke="#b8e6d2"/>
+      <text x="300" y="372" font-weight="700" fill="#007a4d">EMQX 5.x Broker 集群</text>
+      <line x1="450" y1="368" x2="588" y2="368" stroke="#94a8c9" stroke-width="1.4"/>
+      <path d="M455 364 L447 368 L455 372 Z" fill="#94a8c9"/>
+      <path d="M583 364 L591 368 L583 372 Z" fill="#94a8c9"/>
+      <rect x="590" y="352" width="300" height="32" rx="10" fill="#ebf9f3" stroke="#b8e6d2"/>
+      <text x="740" y="372" font-weight="700" fill="#007a4d">Redis 缓存 / 在线状态</text>
+    </g>
+  </g>
+
+  <!-- 箭头 3 -->
+  <g>
+    <line x1="520" y1="400" x2="520" y2="434" stroke="#94a8c9" stroke-width="1.6"/>
+    <path d="M515 432 L520 440 L525 432 Z" fill="#94a8c9"/>
+    <rect x="416" y="404" width="208" height="22" rx="11" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="520" y="419" font-size="11" fill="#5a6b8c" text-anchor="middle">共享订阅 / 专属主题定向</text>
+  </g>
+
+  <!-- ===== L4 应用与平台层 ===== -->
+  <g>
+    <rect x="24" y="442" width="992" height="120" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="442" width="6" height="120" rx="3" fill="#7c3aed"/>
+    <text x="52" y="468" font-size="15" font-weight="700" fill="#1b2a4a">核心业务微服务群（应用与平台层）</text>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="52" y="484" width="250" height="58" rx="10" fill="#f5f1ff" stroke="#d8c8fb"/>
+      <text x="177" y="506" font-weight="700" fill="#6d28d9">统一网关</text>
+      <text x="177" y="522" font-size="11" fill="#5a6b8c">unihh-gateway</text>
+      <text x="177" y="535" font-size="11" fill="#5a6b8c">REST 路由 / CORS / JWT · :28000</text>
+      <line x1="302" y1="502" x2="360" y2="502" stroke="#94a8c9" stroke-width="1.4"/>
+      <path d="M355 498 L363 502 L355 506 Z" fill="#94a8c9"/>
+      <line x1="302" y1="524" x2="360" y2="524" stroke="#94a8c9" stroke-width="1.4"/>
+      <path d="M355 520 L363 524 L355 528 Z" fill="#94a8c9"/>
+      <rect x="364" y="484" width="310" height="58" rx="10" fill="#f5f1ff" stroke="#d8c8fb"/>
+      <text x="519" y="506" font-weight="700" fill="#6d28d9">管理中心 unihh-admin · :28001</text>
+      <text x="519" y="522" font-size="11" fill="#5a6b8c">RBAC · 设备台账 · 物模型 · 驱动托管</text>
+      <text x="519" y="535" font-size="11" fill="#5a6b8c">控制指令下发</text>
+      <rect x="694" y="484" width="294" height="58" rx="10" fill="#f5f1ff" stroke="#d8c8fb"/>
+      <text x="841" y="506" font-weight="700" fill="#6d28d9">数据中心 unihh-data · :28002</text>
+      <text x="841" y="522" font-size="11" fill="#5a6b8c">清洗归一化 · 规则引擎 · 告警触发</text>
+      <text x="841" y="535" font-size="11" fill="#5a6b8c">存储分流</text>
+    </g>
+  </g>
+
+  <!-- 箭头 4 -->
+  <g>
+    <line x1="841" y1="562" x2="841" y2="596" stroke="#94a8c9" stroke-width="1.6"/>
+    <path d="M836 594 L841 602 L846 594 Z" fill="#94a8c9"/>
+    <rect x="718" y="566" width="246" height="22" rx="11" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="841" y="581" font-size="11" fill="#5a6b8c" text-anchor="middle">策略路由（StorageEngineRouter）</text>
+  </g>
+
+  <!-- ===== L5 存储层 ===== -->
+  <g>
+    <rect x="24" y="604" width="992" height="96" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="604" width="6" height="96" rx="3" fill="#d97706"/>
+    <text x="52" y="630" font-size="15" font-weight="700" fill="#1b2a4a">多形式持久化存储（存储层）</text>
+    <text x="52" y="650" font-size="11" fill="#5a6b8c">DataStorageEngine 统一接口 · 单条 save / 批量 saveBatch</text>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="52" y="662" width="230" height="26" rx="13" fill="#fdf3e3" stroke="#f2ddb2"/>
+      <text x="167" y="679" font-weight="700" fill="#b45309">TDengine（时序）</text>
+      <rect x="302" y="662" width="230" height="26" rx="13" fill="#fdf3e3" stroke="#f2ddb2"/>
+      <text x="417" y="679" fill="#b45309">TimescaleDB / InfluxDB</text>
+      <rect x="552" y="662" width="200" height="26" rx="13" fill="#fdf3e3" stroke="#f2ddb2"/>
+      <text x="652" y="679" fill="#b45309">MySQL 8.0（业务）</text>
+      <rect x="772" y="662" width="216" height="26" rx="13" fill="#fdf3e3" stroke="#f2ddb2"/>
+      <text x="880" y="679" fill="#b45309">Redis（实时快照）</text>
+    </g>
+  </g>
+
+  <!-- 底部注脚 -->
+  <text x="520" y="732" font-size="11" fill="#8a99b8" text-anchor="middle">驱动与平台经 MQTT 总线松耦合 · 服务间静态配置显式寻址 · 不依赖注册中心</text>
+</svg>

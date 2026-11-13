@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 400" font-family="-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif">
+  <rect x="0" y="0" width="1040" height="400" rx="16" fill="#f7f9fd"/>
+  <rect x="0.5" y="0.5" width="1039" height="399" rx="15.5" fill="none" stroke="#dbe4f5"/>
+
+  <!-- ===== Main chain ===== -->
+  <g text-anchor="middle">
+    <rect x="24" y="170" width="140" height="64" rx="10" fill="#ffffff" stroke="#dbe4f5"/>
+    <text x="94" y="196" font-size="13" font-weight="700" fill="#1b2a4a">UI / Caller</text>
+    <text x="94" y="214" font-size="10.5" fill="#8a99b8">point write request</text>
+
+    <rect x="192" y="170" width="140" height="64" rx="10" fill="#f5f1ff" stroke="#d8c8fb"/>
+    <text x="262" y="192" font-size="13" font-weight="700" fill="#6d28d9">Gateway</text>
+    <text x="262" y="208" font-size="10.5" fill="#8a99b8">unihh-gateway · :28000</text>
+    <text x="262" y="222" font-size="10.5" fill="#8a99b8">routing &amp; auth</text>
+
+    <rect x="360" y="170" width="140" height="64" rx="10" fill="#f5f1ff" stroke="#d8c8fb"/>
+    <text x="430" y="192" font-size="13" font-weight="700" fill="#6d28d9">Admin Center</text>
+    <text x="430" y="208" font-size="10.5" fill="#8a99b8">unihh-admin · :28001</text>
+    <text x="430" y="222" font-size="10.5" fill="#8a99b8">builds command</text>
+
+    <rect x="528" y="170" width="140" height="64" rx="10" fill="#ebf9f3" stroke="#b8e6d2"/>
+    <text x="598" y="192" font-size="13" font-weight="700" fill="#007a4d">EMQX Bus</text>
+    <text x="598" y="208" font-size="10.5" fill="#8a99b8">iot/driver/{code}/cmd</text>
+    <text x="598" y="222" font-size="10.5" fill="#8a99b8">targeted topic</text>
+
+    <rect x="696" y="170" width="140" height="64" rx="10" fill="#f0f6ff" stroke="#bcd4fb"/>
+    <text x="766" y="192" font-size="13" font-weight="700" fill="#1e6fff">Driver Service</text>
+    <text x="766" y="208" font-size="10.5" fill="#8a99b8">getChannelLock queue</text>
+    <text x="766" y="222" font-size="10.5" fill="#8a99b8">writePoint(...)</text>
+
+    <rect x="864" y="170" width="152" height="64" rx="10" fill="#ffffff" stroke="#dbe4f5"/>
+    <text x="940" y="196" font-size="13" font-weight="700" fill="#1b2a4a">Device / PLC</text>
+    <text x="940" y="214" font-size="10.5" fill="#8a99b8">register rewritten</text>
+  </g>
+
+  <g stroke="#94a8c9" stroke-width="1.8">
+    <line x1="164" y1="202" x2="184" y2="202"/>
+    <line x1="332" y1="202" x2="352" y2="202"/>
+    <line x1="500" y1="202" x2="520" y2="202"/>
+    <line x1="668" y1="202" x2="688" y2="202"/>
+    <line x1="836" y1="202" x2="856" y2="202"/>
+  </g>
+  <g fill="#94a8c9">
+    <path d="M180 197 L190 202 L180 207 Z"/>
+    <path d="M348 197 L358 202 L348 207 Z"/>
+    <path d="M516 197 L526 202 L516 207 Z"/>
+    <path d="M684 197 L694 202 L684 207 Z"/>
+    <path d="M852 197 L862 202 L852 207 Z"/>
+  </g>
+
+  <g>
+    <rect x="330" y="112" width="380" height="26" rx="13" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="520" y="129" font-size="11.5" fill="#5a6b8c" text-anchor="middle">REST (JWT auth) → targeted MQTT topic → driver executes</text>
+    <line x1="520" y1="138" x2="520" y2="162" stroke="#c4d2e8" stroke-width="1.1" stroke-dasharray="3 4"/>
+  </g>
+
+  <g>
+    <rect x="640" y="272" width="252" height="52" rx="10" fill="#f0f6ff" stroke="#bcd4fb"/>
+    <text x="766" y="292" font-size="12" font-weight="700" fill="#1e6fff" text-anchor="middle">Channel-level fair mutex</text>
+    <text x="766" y="310" font-size="10.5" fill="#5a6b8c" text-anchor="middle">reads and writes serialized per channel</text>
+    <line x1="766" y1="234" x2="766" y2="264" stroke="#c4d2e8" stroke-width="1.1" stroke-dasharray="3 4"/>
+  </g>
+
+  <g>
+    <rect x="864" y="272" width="152" height="52" rx="10" fill="#fdf3e3" stroke="#f2ddb2"/>
+    <text x="940" y="292" font-size="11.5" font-weight="700" fill="#b45309" text-anchor="middle">RS485 half-duplex</text>
+    <text x="940" y="310" font-size="10.5" fill="#b45309" text-anchor="middle">commands queued in-lock</text>
+    <line x1="940" y1="234" x2="940" y2="264" stroke="#e4cba0" stroke-width="1.1" stroke-dasharray="3 4"/>
+  </g>
+
+  <g>
+    <rect x="24" y="272" width="560" height="52" rx="10" fill="#ebf9f3" stroke="#b8e6d2"/>
+    <text x="304" y="292" font-size="12" font-weight="700" fill="#007a4d" text-anchor="middle">Result flows back: driver → EMQX → admin center → UI in real time</text>
+    <text x="304" y="310" font-size="10.5" fill="#5a6b8c" text-anchor="middle">parameter snapshot, duration and outcome recorded in Log Audit</text>
+    <path d="M24 258 L24 248 L864 248" stroke="#7fc4a7" stroke-width="1.4" fill="none" stroke-dasharray="5 4"/>
+    <path d="M30 252 L22 262 L34 264 Z" fill="#7fc4a7"/>
+  </g>
+
+  <text x="520" y="366" font-size="11" fill="#8a99b8" text-anchor="middle">Only RW-mode properties and thing-model services can be controlled · full audit trail end to end</text>
+</svg>

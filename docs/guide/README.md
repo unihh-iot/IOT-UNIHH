@@ -21,6 +21,7 @@ UNIHH-IOT 是一套面向工业现场的轻量级开源物联网平台，提供�
 - **统一物模型抽象**：属性（Property）、服务（Service）、事件（Event）三要素建模，物理点位与物模型测点动态映射绑定。
 - **多引擎策略存储**：存储模块 `unihh-storage` 采用策略模式与工厂路由，支持 TDengine、TimescaleDB、InfluxDB、MySQL、Redis 及高频内存缓冲，单条 `save` 与批量 `saveBatch` 均可。
 - **裸机/JAR 运维友好**：微服务间通过 `application.yml` 显式映射地址，单个 JAR 包 `java -jar` 即可启停，适合边缘部署。
+- **Docker Compose 一键部署**：仓库自带编排文件，MySQL、EMQX、核心微服务与协议驱动共 8 个服务一条命令拉起，MySQL 自动建库导表。
 
 ## 平台一览
 
@@ -36,6 +37,6 @@ UNIHH-IOT 是一套面向工业现场的轻量级开源物联网平台，提供�
 
 ## 下一步
 
-- [快速开始](./quickstart.md)：5 步把平台跑起来
+- [快速开始](./quickstart.md)：Docker Compose 一键部署或裸机 JAR，两种方式把平台跑起来
 - [系统架构](./architecture.md)：了解服务拆分与数据流向
 - [驱动开发指南](./driver-dev.md)：3 步交付一个新协议驱动

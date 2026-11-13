@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 756" font-family="-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif">
+  <rect x="0" y="0" width="1040" height="756" rx="16" fill="#f7f9fd"/>
+  <rect x="0.5" y="0.5" width="1039" height="755" rx="15.5" fill="none" stroke="#dbe4f5"/>
+
+  <!-- ===== L1 Physical ===== -->
+  <g>
+    <rect x="24" y="20" width="992" height="96" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="20" width="6" height="96" rx="3" fill="#64748b"/>
+    <text x="52" y="46" font-size="15" font-weight="700" fill="#1b2a4a">Physical Devices &amp; Field Buses (Physical Layer)</text>
+    <text x="52" y="66" font-size="11" fill="#5a6b8c">PLCs · meters · sensors · SCADA hosts</text>
+    <g font-size="12.5" fill="#334155" text-anchor="middle">
+      <rect x="52" y="78" width="210" height="26" rx="13" fill="#f1f5f9" stroke="#e2e8f0"/>
+      <text x="157" y="95">Modbus PLCs / meters</text>
+      <rect x="282" y="78" width="300" height="26" rx="13" fill="#f1f5f9" stroke="#e2e8f0"/>
+      <text x="432" y="95">Siemens S7-200 SMART / 300 / 1200 / 1500</text>
+      <rect x="602" y="78" width="240" height="26" rx="13" fill="#f1f5f9" stroke="#e2e8f0"/>
+      <text x="722" y="95">OPC UA Server / SCADA</text>
+    </g>
+  </g>
+
+  <!-- Arrow 1 -->
+  <g>
+    <line x1="520" y1="116" x2="520" y2="150" stroke="#94a8c9" stroke-width="1.6"/>
+    <path d="M515 148 L520 156 L525 148 Z" fill="#94a8c9"/>
+    <rect x="400" y="120" width="240" height="22" rx="11" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="520" y="135" font-size="11" fill="#5a6b8c" text-anchor="middle">Field network (TCP/IP · serial RS485)</text>
+  </g>
+
+  <!-- ===== L2 Drivers ===== -->
+  <g>
+    <rect x="24" y="158" width="992" height="112" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="158" width="6" height="112" rx="3" fill="#1e6fff"/>
+    <text x="52" y="184" font-size="15" font-weight="700" fill="#1b2a4a">Standalone Protocol Drivers (Southbound Driver Layer)</text>
+    <text x="52" y="204" font-size="11" fill="#5a6b8c">Extends AbstractDriverPlugin · BaseDriverMqttManager manages MQTT bus communication</text>
+    <g font-size="12.5" text-anchor="middle">
+      <g>
+        <rect x="52" y="216" width="290" height="38" rx="10" fill="#f0f6ff" stroke="#bcd4fb"/>
+        <text x="197" y="233" font-weight="700" fill="#1e6fff">Modbus Driver</text>
+        <text x="197" y="248" font-size="11" fill="#5a6b8c">unihh-driver-modbus · :28011</text>
+      </g>
+      <g>
+        <rect x="375" y="216" width="290" height="38" rx="10" fill="#f0f6ff" stroke="#bcd4fb"/>
+        <text x="520" y="233" font-weight="700" fill="#1e6fff">Siemens S7 Driver</text>
+        <text x="520" y="248" font-size="11" fill="#5a6b8c">unihh-driver-s7 · :28012</text>
+      </g>
+      <g>
+        <rect x="698" y="216" width="290" height="38" rx="10" fill="#f0f6ff" stroke="#bcd4fb"/>
+        <text x="843" y="233" font-weight="700" fill="#1e6fff">OPC UA Driver</text>
+        <text x="843" y="248" font-size="11" fill="#5a6b8c">unihh-driver-opcua · :28013</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Arrow 2 -->
+  <g>
+    <line x1="520" y1="270" x2="520" y2="304" stroke="#94a8c9" stroke-width="1.6"/>
+    <path d="M515 302 L520 310 L525 302 Z" fill="#94a8c9"/>
+    <rect x="330" y="274" width="380" height="22" rx="11" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="520" y="289" font-size="11" fill="#5a6b8c" text-anchor="middle">EMQX MQTT bus (telemetry · heartbeat · LWT · control)</text>
+  </g>
+
+  <!-- ===== L3 Messaging ===== -->
+  <g>
+    <rect x="24" y="312" width="992" height="88" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="312" width="6" height="88" rx="3" fill="#009a61"/>
+    <text x="52" y="338" font-size="15" font-weight="700" fill="#1b2a4a">Core Industrial Message Bus (Messaging Layer)</text>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="150" y="352" width="300" height="32" rx="10" fill="#ebf9f3" stroke="#b8e6d2"/>
+      <text x="300" y="372" font-weight="700" fill="#007a4d">EMQX 5.x Broker Cluster</text>
+      <line x1="450" y1="368" x2="588" y2="368" stroke="#94a8c9" stroke-width="1.4"/>
+      <path d="M455 364 L447 368 L455 372 Z" fill="#94a8c9"/>
+      <path d="M583 364 L591 368 L583 372 Z" fill="#94a8c9"/>
+      <rect x="590" y="352" width="300" height="32" rx="10" fill="#ebf9f3" stroke="#b8e6d2"/>
+      <text x="740" y="372" font-weight="700" fill="#007a4d">Redis Cache / Online State</text>
+    </g>
+  </g>
+
+  <!-- Arrow 3 -->
+  <g>
+    <line x1="520" y1="400" x2="520" y2="434" stroke="#94a8c9" stroke-width="1.6"/>
+    <path d="M515 432 L520 440 L525 432 Z" fill="#94a8c9"/>
+    <rect x="408" y="404" width="224" height="22" rx="11" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="520" y="419" font-size="11" fill="#5a6b8c" text-anchor="middle">Shared subscriptions / targeted topics</text>
+  </g>
+
+  <!-- ===== L4 Application ===== -->
+  <g>
+    <rect x="24" y="442" width="992" height="120" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="442" width="6" height="120" rx="3" fill="#7c3aed"/>
+    <text x="52" y="468" font-size="15" font-weight="700" fill="#1b2a4a">Core Business Microservices (Application &amp; Platform Layer)</text>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="52" y="484" width="250" height="58" rx="10" fill="#f5f1ff" stroke="#d8c8fb"/>
+      <text x="177" y="506" font-weight="700" fill="#6d28d9">Gateway</text>
+      <text x="177" y="522" font-size="11" fill="#5a6b8c">unihh-gateway</text>
+      <text x="177" y="535" font-size="11" fill="#5a6b8c">REST routing / CORS / JWT · :28000</text>
+      <line x1="302" y1="502" x2="360" y2="502" stroke="#94a8c9" stroke-width="1.4"/>
+      <path d="M355 498 L363 502 L355 506 Z" fill="#94a8c9"/>
+      <line x1="302" y1="524" x2="360" y2="524" stroke="#94a8c9" stroke-width="1.4"/>
+      <path d="M355 520 L363 524 L355 528 Z" fill="#94a8c9"/>
+      <rect x="364" y="484" width="310" height="58" rx="10" fill="#f5f1ff" stroke="#d8c8fb"/>
+      <text x="519" y="506" font-weight="700" fill="#6d28d9">Admin Center unihh-admin · :28001</text>
+      <text x="519" y="522" font-size="11" fill="#5a6b8c">RBAC · device registry · thing models</text>
+      <text x="519" y="535" font-size="11" fill="#5a6b8c">driver hosting · control dispatch</text>
+      <rect x="694" y="484" width="294" height="58" rx="10" fill="#f5f1ff" stroke="#d8c8fb"/>
+      <text x="841" y="506" font-weight="700" fill="#6d28d9">Data Center unihh-data · :28002</text>
+      <text x="841" y="522" font-size="11" fill="#5a6b8c">cleansing · rule engine · alerting</text>
+      <text x="841" y="535" font-size="11" fill="#5a6b8c">storage routing</text>
+    </g>
+  </g>
+
+  <!-- Arrow 4 -->
+  <g>
+    <line x1="841" y1="562" x2="841" y2="596" stroke="#94a8c9" stroke-width="1.6"/>
+    <path d="M836 594 L841 602 L846 594 Z" fill="#94a8c9"/>
+    <rect x="726" y="566" width="230" height="22" rx="11" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="841" y="581" font-size="11" fill="#5a6b8c" text-anchor="middle">Policy routing (StorageEngineRouter)</text>
+  </g>
+
+  <!-- ===== L5 Storage ===== -->
+  <g>
+    <rect x="24" y="604" width="992" height="96" rx="12" fill="#ffffff" stroke="#dbe4f5"/>
+    <rect x="24" y="604" width="6" height="96" rx="3" fill="#d97706"/>
+    <text x="52" y="630" font-size="15" font-weight="700" fill="#1b2a4a">Multi-Engine Persistent Storage (Storage Layer)</text>
+    <text x="52" y="650" font-size="11" fill="#5a6b8c">DataStorageEngine interface · single save / batch saveBatch</text>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="52" y="662" width="230" height="26" rx="13" fill="#fdf3e3" stroke="#f2ddb2"/>
+      <text x="167" y="679" font-weight="700" fill="#b45309">TDengine (time-series)</text>
+      <rect x="302" y="662" width="230" height="26" rx="13" fill="#fdf3e3" stroke="#f2ddb2"/>
+      <text x="417" y="679" fill="#b45309">TimescaleDB / InfluxDB</text>
+      <rect x="552" y="662" width="200" height="26" rx="13" fill="#fdf3e3" stroke="#f2ddb2"/>
+      <text x="652" y="679" fill="#b45309">MySQL 8.0 (business)</text>
+      <rect x="772" y="662" width="216" height="26" rx="13" fill="#fdf3e3" stroke="#f2ddb2"/>
+      <text x="880" y="679" fill="#b45309">Redis (live snapshots)</text>
+    </g>
+  </g>
+
+  <text x="520" y="732" font-size="11" fill="#8a99b8" text-anchor="middle">Drivers decouple from the platform over MQTT · explicit static addressing · no service registry required</text>
+</svg>

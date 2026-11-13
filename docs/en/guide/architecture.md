@@ -2,39 +2,9 @@
 
 ## Overview
 
-```text
-+-----------------------------------------------------------------------------------+
-|                  Physical devices and field buses (physical layer)                 |
-|      Modbus PLC/meters  |  Siemens S7-200/300/1200/1500  |  OPC UA Server / SCADA  |
-+----------------------------------------+------------------------------------------+
-                                         | Field network (TCP/IP / serial RS485)
-                                         v
-+-----------------------------------------------------------------------------------+
-|                    Distributed independent protocol drivers (southbound layer)     |
-|   [Modbus driver :28011]   |   [Siemens S7 driver :28012]  |  [OPC UA driver :28013]|
-|   Extends AbstractDriverPlugin; MQTT communication managed by BaseDriverMqttManager|
-+----------------------------------------+------------------------------------------+
-                                         | EMQX MQTT bus (data / heartbeat / LWT / control)
-                                         v
-+-----------------------------------------------------------------------------------+
-|                              Core message bus (messaging layer)                    |
-|                  EMQX Broker cluster  <=======>  Redis cache / online state        |
-+----------------------------------------+------------------------------------------+
-                                         | Shared subscriptions / dedicated topics
-                                         v
-+-----------------------------------------------------------------------------------+
-|                        Core business microservices (application layer)             |
-|  [Gateway unihh-gateway :28000]                                                    |
-|       |-- REST/JWT routing & auth --> [Admin unihh-admin :28001] (models/devices)  |
-|       `-- REST data forwarding ----> [Data unihh-data :28002] (rules/persistence)  |
-+----------------------------------------+------------------------------------------+
-                                         | Strategy routing (StorageEngineRouter)
-                                         v
-+-----------------------------------------------------------------------------------+
-|                             Pluggable persistence (storage layer)                  |
-|    TDengine (time series)  |  TimescaleDB / InfluxDB  |  MySQL 8.0  |  Redis cache |
-+-----------------------------------------------------------------------------------+
-```
+Five layers from top to bottom: physical devices connect through field buses into standalone protocol drivers; all interaction between drivers and core microservices runs over the EMQX message bus; the storage layer routes data by shape through policy routing.
+
+![UNIHH-IOT architecture](/images/architecture-en.svg)
 
 ## Services
 
@@ -74,26 +44,9 @@
 
 ### Driver lifecycle and last-will keep-alive
 
-```text
-[Driver process]             [EMQX Broker]                    [Admin unihh-admin]
-      |                           |                                   |
-      |-- 1. setWill(LWT) ------->| (last-will registered, retained)  |
-      |-- 2. connect() ---------->|                                   |
-      |-- 3. publish(ONLINE) ---->|---------------------------------->| (sync driver online)
-      |-- 4. register ----------->|-- iot/driver/register ----------->| (store registration)
-      |                           |                                   |-- push devices & points
-      |<-- config/update ---------|<-- iot/driver/{code}/device/config|
-      |                           |                                   |
-      | [heartbeat every 5s]      |                                   |
-      |-- 5. heartbeat ---------->|-- iot/driver/heartbeat ---------->| (refresh watchdog)
-      |                           |                                   |
-   [crash / power loss]           |                                   |
-      x                           |-- 6. Broker publishes LWT ------->| (mark offline)
-                                  |   (iot/driver/{code}/status)      |-- cascade devices offline
-                                  |                                   |
-                                  |                                   | [Watchdog patrol]
-                                  |                                   | (offline after 15s silence)
-```
+Drivers register themselves on startup and stay alive with a 5-second heartbeat; abnormal disconnects are covered by both the LWT will message and the watchdog.
+
+![Driver lifecycle and LWT keep-alive sequence](/images/driver-lifecycle-en.svg)
 
 Key points:
 
@@ -103,20 +56,15 @@ Key points:
 
 ### Acquisition and storage fan-out
 
-```text
-[Devices] --> [Driver PollingEngine] --> [EMQX iot/driver/+/data] --> [Data unihh-data] --> [StorageEngineRouter]
- (PLC/etc.)    decode / eng. value /        shared subscription       rule & alert checks     +-- TDengine (time series)
-               quality flag                 consumption               cleansing               +-- MySQL (records)
-                                                                                             `-- Redis (live snapshot)
-```
+Telemetry enters the data center over the bus, passes rule and alert checks, then lands in storage routed by data shape.
+
+![Acquisition and storage fan-out](/images/data-flow-en.svg)
 
 ### Write-back control chain
 
-```text
-[UI / caller] --> [Gateway :28000] --> [Admin :28001] --> [EMQX iot/driver/{code}/cmd] --> [Driver] --> [Device]
-  write request     routing / auth       build command          dedicated topic           channel lock     register write
-                                                                                       writePoint(...)
-```
+Control commands pass gateway auth, then reach the driver over a dedicated MQTT topic and are written inside the channel lock.
+
+![Write-back control chain](/images/control-flow-en.svg)
 
 Reads and writes on half-duplex buses (e.g. RS485) are queued through the channel lock automatically — see the [Driver Management](../manual/drivers.md) manual.
 

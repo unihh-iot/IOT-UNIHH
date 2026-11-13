@@ -4,7 +4,7 @@
 
 ## 登录平台
 
-浏览器访问前端地址（本地开发环境为 `http://localhost:5173`），输入账号密码登录。默认超级管理员账号：`admin` / `unihhiot`。
+浏览器访问前端地址（本地开发环境为 `http://localhost:3000`），输入账号密码登录。默认超级管理员账号：`admin` / `unihhiot`。
 
 ![系统登录](/images/login.png)
 

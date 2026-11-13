@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 440" font-family="-apple-system,'Segoe UI','Microsoft YaHei','PingFang SC',sans-serif">
+  <rect x="0" y="0" width="1040" height="440" rx="16" fill="#f7f9fd"/>
+  <rect x="0.5" y="0.5" width="1039" height="439" rx="15.5" fill="none" stroke="#dbe4f5"/>
+
+  <!-- ===== 主链路 ===== -->
+  <g text-anchor="middle">
+    <!-- 物理设备 -->
+    <rect x="30" y="150" width="152" height="70" rx="10" fill="#ffffff" stroke="#dbe4f5"/>
+    <text x="106" y="178" font-size="13.5" font-weight="700" fill="#1b2a4a">物理设备</text>
+    <text x="106" y="196" font-size="11" fill="#5a6b8c">PLC / 仪表</text>
+    <!-- 驱动 -->
+    <rect x="240" y="150" width="176" height="70" rx="10" fill="#f0f6ff" stroke="#bcd4fb"/>
+    <text x="328" y="170" font-size="13.5" font-weight="700" fill="#1e6fff">驱动服务</text>
+    <text x="328" y="186" font-size="11" fill="#5a6b8c">PollingEngine</text>
+    <text x="328" y="203" font-size="10.5" fill="#8a99b8">点位解析 / 工程值换算</text>
+    <!-- EMQX -->
+    <rect x="474" y="150" width="176" height="70" rx="10" fill="#ebf9f3" stroke="#b8e6d2"/>
+    <text x="562" y="170" font-size="13.5" font-weight="700" fill="#007a4d">EMQX 总线</text>
+    <text x="562" y="186" font-size="11" fill="#5a6b8c">iot/driver/+/data</text>
+    <text x="562" y="203" font-size="10.5" fill="#8a99b8">共享订阅消费</text>
+    <!-- 数据中心 -->
+    <rect x="708" y="150" width="176" height="70" rx="10" fill="#f5f1ff" stroke="#d8c8fb"/>
+    <text x="796" y="170" font-size="13.5" font-weight="700" fill="#6d28d9">数据中心</text>
+    <text x="796" y="186" font-size="11" fill="#5a6b8c">unihh-data</text>
+    <text x="796" y="203" font-size="10.5" fill="#8a99b8">规则计算 / 告警判定 · 清洗校准</text>
+    <!-- 路由器 -->
+    <rect x="730" y="286" width="132" height="40" rx="10" fill="#fdf3e3" stroke="#f2ddb2"/>
+    <text x="796" y="302" font-size="12.5" font-weight="700" fill="#b45309">StorageEngine</text>
+    <text x="796" y="318" font-size="12.5" font-weight="700" fill="#b45309">Router 策略路由</text>
+  </g>
+
+  <!-- 主链路箭头 -->
+  <g stroke="#94a8c9" stroke-width="1.8">
+    <line x1="182" y1="185" x2="232" y2="185"/>
+    <line x1="416" y1="185" x2="466" y2="185"/>
+    <line x1="650" y1="185" x2="700" y2="185"/>
+    <line x1="796" y1="220" x2="796" y2="278"/>
+  </g>
+  <g fill="#94a8c9">
+    <path d="M226 180 L236 185 L226 190 Z"/>
+    <path d="M460 180 L470 185 L460 190 Z"/>
+    <path d="M694 180 L704 185 L694 190 Z"/>
+    <path d="M791 272 L796 282 L801 272 Z"/>
+  </g>
+
+  <!-- 品质标记注解 -->
+  <g>
+    <rect x="240" y="98" width="176" height="24" rx="12" fill="#eef3fb" stroke="#dbe4f5"/>
+    <text x="328" y="114" font-size="11" fill="#5a6b8c" text-anchor="middle">上送原始值 + 品质（Quality）标记</text>
+    <line x1="328" y1="122" x2="328" y2="146" stroke="#c4d2e8" stroke-width="1.1" stroke-dasharray="3 4"/>
+  </g>
+
+  <!-- ===== 存储分支 ===== -->
+  <g text-anchor="middle">
+    <rect x="440" y="368" width="180" height="44" rx="10" fill="#ffffff" stroke="#f2ddb2"/>
+    <text x="530" y="386" font-size="12.5" font-weight="700" fill="#b45309">TDengine（时序）</text>
+    <text x="530" y="403" font-size="10.5" fill="#8a99b8">高频数采首选</text>
+    <rect x="640" y="368" width="180" height="44" rx="10" fill="#ffffff" stroke="#f2ddb2"/>
+    <text x="730" y="386" font-size="12.5" font-weight="700" fill="#b45309">MySQL（持久化）</text>
+    <text x="730" y="403" font-size="10.5" fill="#8a99b8">指令响应 / 告警记录</text>
+    <rect x="840" y="368" width="176" height="44" rx="10" fill="#ffffff" stroke="#f2ddb2"/>
+    <text x="928" y="386" font-size="12.5" font-weight="700" fill="#b45309">Redis（实时快照）</text>
+    <text x="928" y="403" font-size="10.5" fill="#8a99b8">前端实时刷新直读</text>
+  </g>
+
+  <!-- 路由到分支的折线 -->
+  <g stroke="#d9a959" stroke-width="1.6" fill="none">
+    <path d="M730 326 L730 340 L530 340 L530 360"/>
+    <path d="M796 326 L796 360"/>
+    <path d="M862 326 L862 340 L928 340 L928 360"/>
+  </g>
+  <g fill="#d9a959">
+    <path d="M525 354 L530 364 L535 354 Z"/>
+    <path d="M791 354 L796 364 L801 354 Z"/>
+    <path d="M923 354 L928 364 L933 354 Z"/>
+  </g>
+
+  <!-- 规则命中旁路 -->
+  <g>
+    <rect x="60" y="286" width="200" height="40" rx="10" fill="#fff5f5" stroke="#f5c6c6"/>
+    <text x="160" y="302" font-size="11.5" font-weight="700" fill="#b91c1c" text-anchor="middle">规则命中 → 反控 / 告警</text>
+    <text x="160" y="318" font-size="10.5" fill="#b91c1c" text-anchor="middle">事件进入告警中心</text>
+    <line x1="260" y1="306" x2="722" y2="248" stroke="#e8a0a0" stroke-width="1.3" stroke-dasharray="5 4"/>
+    <path d="M714 246 L726 247 L718 256 Z" fill="#e8a0a0"/>
+  </g>
+
+  <text x="520" y="424" font-size="11" fill="#8a99b8" text-anchor="middle">save（单条 · 指令响应 / 高危告警） 与 saveBatch（批量 · 高频采集削峰）双通道写入</text>
+</svg>

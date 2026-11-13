@@ -15,6 +15,27 @@
 
 建议按 `gateway → admin → data → 驱动` 的顺序启动。驱动在 admin 之前启动也可正常注册（admin 上线后会重新同步注册信息），但依赖 MySQL 与 EMQX 必须先就绪。
 
+### Docker Compose 启动后服务一直重启？
+
+最常见原因是 MySQL 尚未通过健康检查：`unihh-admin` 依赖 `unihh-mysql` 的 `service_healthy` 条件，MySQL 首次启动要执行 `db/unihh_iot.sql` 全量导表，可能需要 1~2 分钟。按顺序排查：
+
+1. `docker compose ps` 确认 `unihh-mysql` 是否已变为 healthy；
+2. `docker compose logs unihh-mysql` 查看导表是否报错；
+3. `docker compose logs unihh-admin` 若报连接数据库失败，等待 MySQL 就绪后服务会自动恢复（`restart: always`）。
+
+### 本机端口被占用（3306 / 1883 / 28000 等）怎么办？
+
+修改 `docker-compose.yml` 中对应服务 `ports` 的**左侧宿主机端口**（右侧容器端口不可改），例如将 `"3306:3306"` 改为 `"13306:3306"`，并同步修改各服务连接串中引用的端口。EMQX 的 1883 总线端口被占用时，所有驱动与微服务的 `EMQX_SERVER_URI` 需一并调整。
+
+### 如何彻底重置 Docker 环境？
+
+```bash
+docker compose down -v   # 停止并删除容器与 mysql_data 数据卷
+docker compose up -d     # 重新启动，MySQL 将重新执行初始化脚本
+```
+
+注意：`down -v` 会删除全部业务数据，执行前先备份（见[部署与运维](../guide/deploy.md#容器化升级)）。
+
 ### 最低配置跑得动吗？
 
 可以。核心服务推荐 `-Xmx128m`、驱动 `-Xmx64m`（见[部署与运维](../guide/deploy.md#jvm-内存调优)），2GB 内存的树莓派即可承载"EMQX + 三服务 + 单驱动"的最小系统。

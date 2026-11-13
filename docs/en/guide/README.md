@@ -21,6 +21,7 @@ Legacy industrial data acquisition platforms share a set of well-known pain poin
 - **Unified thing model**: properties, services and events with dynamic mapping between physical points and logical measurements.
 - **Pluggable storage**: the `unihh-storage` module routes by strategy across TDengine, TimescaleDB, InfluxDB, MySQL, Redis and in-memory buffers, supporting single `save` and batch `saveBatch`.
 - **Ops-friendly deployment**: microservices locate each other through plain `application.yml` addresses — no registry required; each module runs as a single JAR with `java -jar`.
+- **One-command Docker Compose**: the repository ships an orchestration file that brings up all 8 services — MySQL, EMQX, core microservices and protocol drivers — with automatic database initialization.
 
 ## A Look at the Platform
 
@@ -36,6 +37,6 @@ See the [Operation Manual](/en/manual/) for the complete walkthrough of every pa
 
 ## Next Steps
 
-- [Quick Start](./quickstart.md) — get the platform running in five steps
+- [Quick Start](./quickstart.md) — Docker Compose or bare-metal JAR, your pick
 - [Architecture](./architecture.md) — service topology and data flows
 - [Driver Development Guide](./driver-dev.md) — ship a new protocol driver in three steps
